@@ -1,0 +1,40 @@
+directories:
+  output: dist
+  buildResources: build
+appId: SeaDriverGames.DotsMineLauncher
+productName: SeaDriverGames-Launcher
+artifactName: ${productName}-setup-${version}.${ext}
+copyright: Copyright © 2023 SeaDriver Games. All Rights Reserved.
+asar: true
+compression: maximum
+files:
+  - filter:
+      - '!{dist,.gitignore,.vscode,docs,dev-app-update.yml,.nvmrc,.eslintrc.json}'
+extraResources:
+  - filter:
+      - libraries
+win:
+  target:
+    - target: nsis
+      arch: x64
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  artifactName: ${productName}-setup-${version}-${arch}.${ext}
+  category: public.app-category.games
+linux:
+  target: AppImage
+  maintainer: Daniel Scalzi
+  vendor: Daniel Scalzi
+  synopsis: Seadrive Games Launcher
+  description: Custom launcher which allows users to join modded servers. All mods, configurations, and updates are handled automatically.
+  category: Game
+electronVersion: 33.4.3

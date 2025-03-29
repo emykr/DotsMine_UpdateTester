@@ -1,0 +1,22 @@
+[
+    {
+        "title": "Project Lead",
+        "name": "Team DotsMine"
+    },
+    {
+        "title": "Development Team",
+        "name": "DotsMine Developers"
+    },
+    {
+        "title": "UI/UX Design",
+        "name": "DotsMine Design Team"
+    },
+    {
+        "title": "Special Thanks",
+        "names": [
+            "Minecraft Community",
+            "Open Source Contributors",
+            "Our Amazing Users"
+        ]
+    }
+]

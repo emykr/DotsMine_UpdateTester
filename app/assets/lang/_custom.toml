@@ -1,0 +1,21 @@
+# Custom Language File for Launcher Customizer
+
+[ejs.app]
+title = "SeaDriver Games"
+
+[ejs.landing]
+mediaGitHubURL = "https://seadrivergames.com/"
+mediaTwitterURL = "https://x.com/SeaDriver_Games"
+mediaInstagramURL = "#"
+mediaYouTubeURL = "#"
+mediaDiscordURL = "https://discord.gg/mvXvVgRscT"
+
+[ejs.settings]
+sourceGithubLink = "#"
+supportLink = "#"
+
+[ejs.welcome]
+welcomeHeader = "SeaDriver Launcher"
+welcomeDescription = "안녕하세요 SeaDriver Games입니다"
+welcomeDescCTA = ""
+
