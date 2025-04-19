@@ -125,8 +125,8 @@ function setLaunchEnabled(val){
 const start_button = document.getElementById('start_button')
 
 // Keep reference to Minecraft Process
-let proc
-let isLaunching = false
+let proc = null
+let isLaunching = false  
 
 // Start button click handler
 start_button.addEventListener('click', async () => {
@@ -523,7 +523,6 @@ async function downloadJava(effectiveJavaOptions, launchAfter = true) {
 }
 
 // Keep reference to Minecraft Process
-let proc
 // Is DiscordRPC enabled
 let hasRPC = false
 // Joined server regex
