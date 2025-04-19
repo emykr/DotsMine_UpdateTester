@@ -77,6 +77,18 @@ function setLaunchPercentage(percent){
     launch_progress.setAttribute('max', 100)
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
+    
+    // 시작 버튼 로딩 바 업데이트
+    const startButton = document.getElementById('start_button')
+    const progressFill = startButton.querySelector('.progress-fill')
+    
+    if(percent > 0) {
+        startButton.classList.add('loading')
+        progressFill.style.width = percent + '%'
+    } else {
+        startButton.classList.remove('loading')
+        progressFill.style.width = '0%'
+    }
 }
 
 /**
@@ -87,6 +99,9 @@ function setLaunchPercentage(percent){
 function setDownloadPercentage(percent){
     remote.getCurrentWindow().setProgressBar(percent/100)
     setLaunchPercentage(percent)
+    
+    // 100%에 도달했을 때 바로 로딩 상태를 제거하지 않음
+    // 게임이 실제로 실행될 때까지 유지
 }
 
 /**
@@ -95,25 +110,70 @@ function setDownloadPercentage(percent){
  * @param {boolean} val True to enable, false to disable.
  */
 function setLaunchEnabled(val){
-    document.getElementById('start_button').disabled = !val
+    const startButton = document.getElementById('start_button')
+    
+    if(val) {
+        startButton.disabled = false
+        startButton.classList.remove('loading')
+        startButton.querySelector('.progress-fill').style.width = '0%'
+    } else {
+        startButton.disabled = true
+    }
 }
 
 // Start button element
 const start_button = document.getElementById('start_button')
 
+// Keep reference to Minecraft Process
+let proc
+let isLaunching = false
+
 // Start button click handler
 start_button.addEventListener('click', async () => {
+    // 이미 게임이 실행 중이거나 실행 중인 경우
+    if(proc != null || isLaunching) {
+        setOverlayContent(
+            Lang.queryJS('landing.launch.alreadyRunningTitle'),
+            Lang.queryJS('landing.launch.alreadyRunningText'),
+            Lang.queryJS('landing.launch.alreadyRunningConfirm'),
+            Lang.queryJS('landing.launch.alreadyRunningCancel')
+        )
+        setOverlayHandler(() => {
+            toggleOverlay(false)
+            startGame()
+        })
+        setDismissHandler(() => {
+            toggleOverlay(false, true)
+        })
+        toggleOverlay(true, true)
+        return
+    }
+    
+    startGame()
+})
+
+async function startGame() {
     loggerLanding.info('Starting game..')
     try {
+        isLaunching = true
+        setLaunchEnabled(false)
+        
         const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
         const jExe = ConfigManager.getJavaExecutable(ConfigManager.getSelectedServer())
         
+        // Add loading bar container
+        if(!start_button.querySelector('.progress-fill')) {
+            const progressFill = document.createElement('div')
+            progressFill.className = 'progress-fill'
+            start_button.appendChild(progressFill)
+        }
+
         if(jExe == null){
             await asyncSystemScan(server.effectiveJavaOptions)
         } else {
             setLaunchDetails(Lang.queryJS('landing.launch.pleaseWait'))
             toggleLaunchArea(true)
-            setLaunchPercentage(0, 100)
+            setLaunchPercentage(0)
 
             const details = await validateSelectedJvm(ensureJavaDirIsRoot(jExe), server.effectiveJavaOptions.supported)
             if(details != null){
@@ -129,8 +189,21 @@ start_button.addEventListener('click', async () => {
             Lang.queryJS('landing.launch.failureTitle'), 
             Lang.queryJS('landing.launch.failureText')
         )
+    } finally {
+        isLaunching = false
     }
-})
+}
+
+// 게임이 실제로 시작되었는지 확인하는 함수
+function onGameLaunchComplete() {
+    // 로딩 상태 제거
+    start_button.classList.remove('loading')
+    const progressFill = start_button.querySelector('.progress-fill')
+    if(progressFill) {
+        progressFill.style.width = '0%'
+    }
+    setLaunchEnabled(true)
+}
 
 // Enable/disable start button based on server selection
 function setStartButtonEnabled(enabled) {
@@ -593,9 +666,13 @@ async function dlAsync(login = true) {
             if(GAME_LAUNCH_REGEX.test(data.trim())){
                 const diff = Date.now()-start
                 if(diff < MIN_LINGER) {
-                    setTimeout(onLoadComplete, MIN_LINGER-diff)
+                    setTimeout(() => {
+                        onLoadComplete()
+                        onGameLaunchComplete() // 게임 시작 완료 처리
+                    }, MIN_LINGER-diff)
                 } else {
                     onLoadComplete()
+                    onGameLaunchComplete() // 게임 시작 완료 처리
                 }
             }
         }
@@ -636,7 +713,12 @@ async function dlAsync(login = true) {
                     loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
                     DiscordWrapper.shutdownRPC()
                     hasRPC = false
-                    proc = null
+                    proc = null // proc 초기화
+                })
+            } else {
+                proc.on('close', (code, signal) => {
+                    loggerLaunchSuite.info('Game process terminated')
+                    proc = null // proc 초기화
                 })
             }
 

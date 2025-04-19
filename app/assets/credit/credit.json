@@ -1,0 +1,40 @@
+[
+    {
+        "title": "프로젝트 리더",
+        "name": "Team DotsMine",
+        "image": "assets/images/seadriver.png",
+        "imageAlign": "left",
+        "imagePosition": "top"
+    },
+    {
+        "title": "개발팀",
+        "name": "DotsMine Developers",
+        "image": "assets/images/icons/sevenstar.svg",
+        "imageAlign": "left",
+        "imagePosition": "top"
+    },
+    {
+        "title": "UI/UX 디자인",
+        "name": "DotsMine Design Team",
+        "image": "assets/images/icons/profile.svg",
+        "imageAlign": "right",
+        "imagePosition": "top"
+    },
+    {
+        "title": "서버 관리자",
+        "name": "DotsMine Server Team",
+        "image": "assets/images/icons/minecraft.ico",
+        "imageAlign": "center",
+        "imagePosition": "bottom"
+    },
+    {
+        "title": "특별한 감사",
+        "names": [
+            "Minecraft 커뮤니티",
+            "오픈소스 기여자들",
+            "저희를 사랑해주시는 유저분들"
+        ],
+        "imageAlign": "center",
+        "imagePosition": "top"
+    }
+]

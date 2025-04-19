@@ -157,6 +157,10 @@ pleaseWait = "Please wait.."
 failureTitle = "Error During Launch"
 failureText = "See console (CTRL + Shift + i) for more details."
 okay = "Okay"
+alreadyRunningTitle = "Game is Already Running"  
+alreadyRunningText = "Would you like to start anyway?"
+alreadyRunningConfirm = "Start Anyway" 
+alreadyRunningCancel = "Cancel"
 
 [js.landing.selectedAccount]
 noAccountSelected = "No Account Selected"

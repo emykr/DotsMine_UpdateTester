@@ -1557,6 +1557,124 @@ function prepareUpdateTab(data = null){
 }
 
 /**
+ * 크레딧 시스템 (페이드 인/아웃, 이미지 지원)
+ */
+const CREDITS_JSON_PATH = './assets/credit/credit.json'
+const creditsContent = document.getElementById('creditsContent')
+let creditsFadeTimeout = null
+
+function renderCredits(credits) {
+    creditsContent.innerHTML = ''
+    credits.forEach((entry, idx) => {
+        const item = document.createElement('div')
+        item.className = 'creditItem'
+        
+        if (entry.image) {
+            const imgContainer = document.createElement('div')
+            imgContainer.className = 'creditImageContainer'
+            
+            // 이미지 컨테이너에 정렬과 위치 클래스 추가
+            if (entry.imageAlign) {
+                imgContainer.classList.add(`image-align-${entry.imageAlign}`)
+            }
+            if (entry.imagePosition) {
+                imgContainer.classList.add(`image-position-${entry.imagePosition}`)
+            }
+
+            const img = document.createElement('img')
+            img.src = entry.image
+            img.alt = entry.title
+            img.className = 'creditImage'
+            imgContainer.appendChild(img)
+            
+            // 이미지 위치에 따라 컨테이너 위치 조정
+            if (entry.imagePosition === 'top') {
+                item.insertBefore(imgContainer, item.firstChild)
+            } else {
+                item.appendChild(imgContainer)
+            }
+        }
+
+        const contentContainer = document.createElement('div')
+        contentContainer.className = 'creditContentContainer'
+
+        const title = document.createElement('h3')
+        title.textContent = entry.title
+        contentContainer.appendChild(title)
+
+        if (entry.name) {
+            const p = document.createElement('p')
+            p.textContent = entry.name
+            contentContainer.appendChild(p)
+        } else if (entry.names) {
+            const ul = document.createElement('ul')
+            entry.names.forEach(n => {
+                const li = document.createElement('li')
+                li.textContent = n
+                ul.appendChild(li)
+            })
+            contentContainer.appendChild(ul)
+        }
+
+        item.appendChild(contentContainer)
+        creditsContent.appendChild(item)
+
+        setTimeout(() => {
+            item.style.opacity = 1
+            item.style.transform = 'translateY(0)'
+        }, 100 + idx * 120)
+    })
+}
+
+async function loadCredits() {
+    try {
+        const res = await fetch(CREDITS_JSON_PATH)
+        const credits = await res.json()
+        renderCredits(credits)
+    } catch (e) {
+        creditsContent.innerHTML = '<div style="color:#f66">크레딧 정보를 불러올 수 없습니다.</div>'
+    }
+}
+
+function fadeOutCredits() {
+    const items = creditsContent.querySelectorAll('.creditItem')
+    items.forEach((item, idx) => {
+        item.style.opacity = 0
+        item.style.transform = 'translateY(50px)'
+    })
+    if (creditsFadeTimeout) clearTimeout(creditsFadeTimeout)
+    creditsFadeTimeout = setTimeout(() => {
+        creditsContent.innerHTML = ''
+    }, 600)
+}
+
+// 크레딧 탭 진입/이탈 이벤트 바인딩
+const navItems = document.getElementsByClassName('settingsNavItem')
+for (let nav of navItems) {
+    if (nav.getAttribute('rSc') === 'settingsTabCredits') {
+        nav.addEventListener('click', () => {
+            loadCredits()
+        })
+    } else {
+        nav.addEventListener('click', () => {
+            fadeOutCredits()
+        })
+    }
+}
+
+// 크레딧 추가 인터페이스 예시 (관리자/개발자용)
+window.addCreditEntry = function(entry) {
+    // entry: { title, name/names, image }
+    fetch(CREDITS_JSON_PATH)
+        .then(res => res.json())
+        .then(credits => {
+            credits.push(entry)
+            // 실제 파일 저장은 백엔드 필요. Electron 환경에서는 fs로 저장 가능.
+            // 예시: require('fs').writeFileSync(CREDITS_JSON_PATH, JSON.stringify(credits, null, 2))
+        })
+}
+
+/**
  * Settings preparation functions.
  */
 
@@ -1580,4 +1698,4 @@ async function prepareSettings(first = false) {
 }
 
 // Prepare the settings UI on startup.
-//prepareSettings(true)
+prepareSettings(true)

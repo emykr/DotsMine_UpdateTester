@@ -1,14 +1,30 @@
-<div id="overlayContainer" class="hidden">
-    <div id="serverSelectContent" class="hidden">
-        <!-- Server select content -->
-    </div>
-    <div id="accountSelectContent" class="hidden">
-        <!-- Account select content -->
-    </div>
+<div id="overlayContainer">
     <div id="overlayContent">
-        <span id="overlayTitle">Lorem Ipsum:<br>Finis Illud</span>
-        <span id="overlayDesc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud..</span>
+        <span id="overlayTitle"></span>
+        <span id="overlayDesc"></span>
         <div id="overlayActionContainer">
+            <button id="overlayAcknowledge" class="overlayKeybindEnter"></button>
+            <button id="overlayDismiss" class="overlayKeybindEsc"></button>
+        </div>
+    </div>
+    <div id="serverSelectContent">
+        <span id="serverSelectHeader">서버 선택</span>
+        <div id="serverSelectList">
+            <div id="serverSelectListScrollable"></div>
+        </div>
+        <div id="serverSelectActions">
+            <button id="serverSelectConfirm" class="overlayKeybindEnter">선택</button>
+            <button id="serverSelectCancel" class="overlayKeybindEsc">취소</button>
+        </div>
+    </div>
+    <div id="accountSelectContent">
+        <span id="accountSelectHeader">계정 선택</span>
+        <div id="accountSelectList">
+            <div id="accountSelectListScrollable"></div>
+        </div>
+        <div id="accountSelectActions">
+            <button id="accountSelectConfirm" class="overlayKeybindEnter">선택</button>
+            <button id="accountSelectCancel" class="overlayKeybindEsc">취소</button>
         </div>
     </div>
     <script src="./assets/js/scripts/overlay.js"></script>

@@ -67,7 +67,7 @@ function initializeUI() {
     updateUIComponents()
     
     // 뉴스 초기화
-    initNews().catch(err => {
+    initlizeGameNews().catch(err => {
         console.error('Failed to initialize news:', err)
     })
 }
@@ -112,7 +112,7 @@ async function showMainUI(data){
             }
         }
 
-        await initlizeNews()
+        await initlizeGameNews()
 
         setTimeout(() => {
             $('#loadingContainer').fadeOut(500, () => {
@@ -547,7 +547,7 @@ function updateUIComponents() {
 }
 
 
-function initlizeNews (){
+function initlizeGameNews (){
     return new Promise((resolve, reject) => {
         // 기존 스크롤 이벤트 제거
         $('#newsContainer').off('scroll');
