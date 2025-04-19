@@ -121,30 +121,43 @@ function setLaunchEnabled(val){
     }
 }
 
+// Enable/disable start button based on server selection
+function setStartButtonEnabled(enabled) {
+    if(start_button) {
+        start_button.style.opacity = enabled ? '1' : '0.5'
+        start_button.style.cursor = enabled ? 'pointer' : 'not-allowed'
+        start_button.disabled = !enabled
+    }
+}
+
+// 게임이 실행중인지 확인하는 변수
+let proc = null 
+let isLaunching = false
+
 // Start button element
 const start_button = document.getElementById('start_button')
 
-// Keep reference to Minecraft Process
-let proc = null
-let isLaunching = false  
-
 // Start button click handler
 start_button.addEventListener('click', async () => {
-    // 이미 게임이 실행 중이거나 실행 중인 경우
+    // 게임이 실행중이거나 실행 시도중인 경우
     if(proc != null || isLaunching) {
+        // 오버레이 컨텐츠 설정
         setOverlayContent(
             Lang.queryJS('landing.launch.alreadyRunningTitle'),
             Lang.queryJS('landing.launch.alreadyRunningText'),
             Lang.queryJS('landing.launch.alreadyRunningConfirm'),
             Lang.queryJS('landing.launch.alreadyRunningCancel')
         )
+        // 확인 버튼 클릭 시 동작 설정
         setOverlayHandler(() => {
             toggleOverlay(false)
-            startGame()
+            startGame() // 게임 시작 실행
         })
+        // 취소 버튼 클릭 시 동작 설정 
         setDismissHandler(() => {
-            toggleOverlay(false, true)
+            toggleOverlay(false)
         })
+        // 오버레이 표시
         toggleOverlay(true, true)
         return
     }
@@ -203,15 +216,6 @@ function onGameLaunchComplete() {
         progressFill.style.width = '0%'
     }
     setLaunchEnabled(true)
-}
-
-// Enable/disable start button based on server selection
-function setStartButtonEnabled(enabled) {
-    if(start_button) {
-        start_button.style.opacity = enabled ? '1' : '0.5'
-        start_button.style.cursor = enabled ? 'pointer' : 'not-allowed'
-        start_button.disabled = !enabled
-    }
 }
 
 // Bind settings button

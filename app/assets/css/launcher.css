@@ -3529,11 +3529,6 @@ input:checked + .toggleSwitchSlider:before {
 #overlayContent a,
 #overlayDismiss {
     color: rgba(202, 202, 202, 0.75);
-
-/* Main overlay content anchor styles. */
-#overlayContent a,
-#overlayDismiss {
-    color: rgba(202, 202, 202, 0.75);
     transition: 0.25s ease;
 }
 #overlayContent a:hover,
