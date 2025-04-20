@@ -1568,32 +1568,21 @@ function renderCredits(credits) {
     credits.forEach((entry, idx) => {
         const item = document.createElement('div')
         item.className = 'creditItem'
+        item.style.opacity = '0'
+        item.style.transform = 'translateX(-20px)'
         
-        if (entry.image) {
-            const imgContainer = document.createElement('div')
-            imgContainer.className = 'creditImageContainer'
-            
-            // 이미지 컨테이너에 정렬과 위치 클래스 추가
-            if (entry.imageAlign) {
-                imgContainer.classList.add(`image-align-${entry.imageAlign}`)
-            }
-            if (entry.imagePosition) {
-                imgContainer.classList.add(`image-position-${entry.imagePosition}`)
-            }
+        const imgContainer = document.createElement('div')
+        imgContainer.className = 'creditImageContainer'
 
+        if (entry.image) {
             const img = document.createElement('img')
             img.src = entry.image
             img.alt = entry.title
             img.className = 'creditImage'
             imgContainer.appendChild(img)
-            
-            // 이미지 위치에 따라 컨테이너 위치 조정
-            if (entry.imagePosition === 'top') {
-                item.insertBefore(imgContainer, item.firstChild)
-            } else {
-                item.appendChild(imgContainer)
-            }
         }
+        
+        item.appendChild(imgContainer)
 
         const contentContainer = document.createElement('div')
         contentContainer.className = 'creditContentContainer'
@@ -1619,10 +1608,12 @@ function renderCredits(credits) {
         item.appendChild(contentContainer)
         creditsContent.appendChild(item)
 
+        // Fade in animation with slide
         setTimeout(() => {
-            item.style.opacity = 1
-            item.style.transform = 'translateY(0)'
-        }, 100 + idx * 120)
+            item.style.transition = 'all 0.5s ease'
+            item.style.opacity = '1'
+            item.style.transform = 'translateX(0)'
+        }, idx * 100)
     })
 }
 
@@ -1639,13 +1630,16 @@ async function loadCredits() {
 function fadeOutCredits() {
     const items = creditsContent.querySelectorAll('.creditItem')
     items.forEach((item, idx) => {
-        item.style.opacity = 0
-        item.style.transform = 'translateY(50px)'
+        setTimeout(() => {
+            item.style.opacity = '0'
+            item.style.transform = 'translateX(-20px)'
+        }, idx * 100)
     })
+    
     if (creditsFadeTimeout) clearTimeout(creditsFadeTimeout)
     creditsFadeTimeout = setTimeout(() => {
         creditsContent.innerHTML = ''
-    }, 600)
+    }, items.length * 100 + 500)
 }
 
 // 크레딧 탭 진입/이탈 이벤트 바인딩
