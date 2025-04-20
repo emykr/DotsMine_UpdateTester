@@ -4235,24 +4235,6 @@ input:checked + .toggleSwitchSlider:before {
 #creditsContainer::-webkit-scrollbar-track {
     display: none;
 }
-    object-fit: contain; /* 항상 비율 유지 */
-}
-
-/* Credits Container Styles */
-#creditsContainer {
-    height: 100%;
-    overflow-y: auto;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-#creditsContainer::-webkit-scrollbar {
-    width: 2px;
-}
-
-#creditsContainer::-webkit-scrollbar-track {
-    display: none;
-}
 
 #creditsContainer::-webkit-scrollbar-thumb {
     border-radius: 10px;
