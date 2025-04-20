@@ -7,6 +7,7 @@ const { getMojangOS, isLibraryCompatible, mcVersionAtLeast }  = require('helios-
 const { Type }              = require('helios-distribution-types')
 const os                    = require('os')
 const path                  = require('path')
+const chokidar              = require('chokidar')
 
 const ConfigManager            = require('./configmanager')
 
@@ -39,12 +40,22 @@ class ProcessBuilder {
         this.usingLiteLoader = false
         this.usingFabricLoader = false
         this.llPath = null
+
+        // 옵션 파일 경로
+        this.defaultOptionsPath = path.join(__dirname, '../../assets/game_options/options.txt')
+        this.gameOptionsPath = path.join(this.gameDir, 'options.txt')
+        this.backupOptionsPath = path.join(__dirname, '../../assets/game_options/options.backup.txt')
+        this.optionsWatcher = null
+        this.optionsCache = []
+        this.lastSaveTime = 0
+        this.saveDebounceTime = 1000 // 1초 디바운스
     }
     
     /**
      * Convienence method to run the functions typically used to build a process.
      */
-    build(){
+    async build(){
+        await this.setupOptionsFile()
         fs.ensureDirSync(this.gameDir)
         const tempNativePath = path.join(os.tmpdir(), ConfigManager.getTempNativeFolder(), crypto.pseudoRandomBytes(16).toString('hex'))
         process.throwDeprecation = true
@@ -105,9 +116,146 @@ class ProcessBuilder {
                     logger.info('Temp dir deleted successfully.')
                 }
             })
+            this.cleanup()
         })
 
         return child
+    }
+
+    // 옵션 파일 복사 및 감시 시작
+    async setupOptionsFile() {
+        try {
+            // options 폴더 생성
+            await fs.ensureDir(path.dirname(this.defaultOptionsPath))
+            
+            // 기본 옵션 파일이 없으면 생성
+            if (!await fs.pathExists(this.defaultOptionsPath)) {
+                await this.writeOptionsFile(this.defaultOptionsPath, ['version:3465'])
+            }
+
+            // 캐시 초기화
+            const content = await this.readOptionsFile(this.defaultOptionsPath)
+            if (!content) {
+                throw new Error('Failed to initialize options cache')
+            }
+            this.optionsCache = content
+
+            // 백업 생성
+            await this.backupOptions()
+
+            // 게임 디렉토리에 복사
+            await fs.copy(this.defaultOptionsPath, this.gameOptionsPath)
+            logger.info('Copied default options.txt to game directory')
+
+            // 파일 감시 설정
+            this.optionsWatcher = chokidar.watch(this.gameOptionsPath, {
+                persistent: true,
+                awaitWriteFinish: {
+                    stabilityThreshold: 500,
+                    pollInterval: 100
+                }
+            })
+
+            this.optionsWatcher.on('change', async () => {
+                try {
+                    const now = Date.now()
+                    if (now - this.lastSaveTime < this.saveDebounceTime) {
+                        return
+                    }
+
+                    const newContent = await this.readOptionsFile(this.gameOptionsPath)
+                    if (!newContent) {
+                        throw new Error('Failed to read changed options file')
+                    }
+
+                    // 내용이 비어있거나 손상된 경우 캐시에서 복원
+                    if (newContent.length < 2) {
+                        logger.warn('Options file appears corrupted, restoring from cache')
+                        await this.writeOptionsFile(this.gameOptionsPath, this.optionsCache)
+                        return
+                    }
+
+                    // 캐시 업데이트
+                    this.optionsCache = newContent
+                    
+                    // 기본 옵션 파일 업데이트
+                    await this.writeOptionsFile(this.defaultOptionsPath, newContent)
+                    
+                    // 백업 갱신
+                    await this.backupOptions()
+                    
+                    this.lastSaveTime = now
+                    logger.info('Updated default options.txt from game changes')
+
+                } catch (err) {
+                    logger.error('Error handling options file change:', err)
+                    // 오류 발생 시 백업에서 복원
+                    await this.restoreFromBackup()
+                }
+            })
+
+        } catch (err) {
+            logger.error('Error setting up options file:', err)
+            await this.restoreFromBackup()
+        }
+    }
+
+    async readOptionsFile(filePath) {
+        try {
+            const content = await fs.readFile(filePath, 'utf-8')
+            return content.split('\n').filter(line => line.trim() !== '')
+        } catch (err) {
+            logger.error(`Failed to read options file ${filePath}:`, err)
+            return null
+        }
+    }
+
+    async writeOptionsFile(filePath, content) {
+        try {
+            await fs.writeFile(filePath, Array.isArray(content) ? content.join('\n') : content)
+            return true
+        } catch (err) {
+            logger.error(`Failed to write options file ${filePath}:`, err)
+            return false
+        }
+    }
+
+    async backupOptions() {
+        try {
+            await fs.copy(this.defaultOptionsPath, this.backupOptionsPath)
+            logger.info('Created options backup')
+            return true
+        } catch (err) {
+            logger.error('Failed to create options backup:', err)
+            return false
+        }
+    }
+
+    async restoreFromBackup() {
+        try {
+            if (await fs.pathExists(this.backupOptionsPath)) {
+                await fs.copy(this.backupOptionsPath, this.defaultOptionsPath)
+                if (this.optionsCache.length > 0) {
+                    await this.writeOptionsFile(this.gameOptionsPath, this.optionsCache)
+                }
+                logger.info('Restored options from backup')
+                return true
+            }
+            return false
+        } catch (err) {
+            logger.error('Failed to restore options from backup:', err)
+            return false
+        }
+    }
+
+    // 게임 프로세스 종료 시 감시 중지
+    cleanup() {
+        if (this.optionsWatcher) {
+            this.optionsWatcher.close()
+            this.optionsWatcher = null
+            this.optionsCache = []
+            logger.info('Stopped watching options.txt')
+        }
     }
 
     /**

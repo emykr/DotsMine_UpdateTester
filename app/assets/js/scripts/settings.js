@@ -1559,27 +1559,24 @@ function prepareUpdateTab(data = null){
 /**
  * 크레딧 시스템 (페이드 인/아웃, 이미지 지원)
  */
-const CREDITS_JSON_PATH = './assets/credit/credit.json'
 const creditsContent = document.getElementById('creditsContent')
 let creditsFadeTimeout = null
-
-// 크레딧 데이터 캐시 변수
 let cachedCredits = null
 
 async function loadCredits() {
     try {
-        // 캐시된 데이터가 있으면 그걸 사용
         if(cachedCredits) {
             renderCredits(cachedCredits)
             return
         }
         
-        // 없으면 새로 불러오기
-        const res = await fetch(CREDITS_JSON_PATH)
+        const creditPath = ConfigManager.getCreditPath()
+        const res = await fetch(creditPath)
         const credits = await res.json()
-        cachedCredits = credits  // 데이터 캐시
+        cachedCredits = credits
         renderCredits(credits)
     } catch (e) {
+        console.error('Failed to load credits:', e)
         creditsContent.innerHTML = '<div style="color:#f66">크레딧 정보를 불러올 수 없습니다.</div>'
     }
 }
@@ -1600,6 +1597,9 @@ function renderCredits(credits) {
             img.src = entry.image
             img.alt = entry.title
             img.className = 'creditImage'
+            if(entry.imageAlign) {
+                img.style.objectPosition = entry.imageAlign
+            }
             imgContainer.appendChild(img)
         }
         
@@ -1616,7 +1616,9 @@ function renderCredits(credits) {
             const p = document.createElement('p')
             p.textContent = entry.name
             contentContainer.appendChild(p)
-        } else if (entry.names) {
+        }
+        
+        if (entry.names) {
             const ul = document.createElement('ul')
             entry.names.forEach(n => {
                 const li = document.createElement('li')
@@ -1629,7 +1631,6 @@ function renderCredits(credits) {
         item.appendChild(contentContainer)
         creditsContent.appendChild(item)
 
-        // Fade in animation with slide
         setTimeout(() => {
             item.style.transition = 'all 0.5s ease'
             item.style.opacity = '1'
@@ -1647,13 +1648,19 @@ function fadeOutCredits() {
         }, idx * 100)
     })
     
-    if (creditsFadeTimeout) clearTimeout(creditsFadeTimeout)
+    if (creditsFadeTimeout) {
+        clearTimeout(creditsFadeTimeout)
+    }
     creditsFadeTimeout = setTimeout(() => {
         creditsContent.innerHTML = ''
     }, items.length * 100 + 500)
 }
 
-// 크레딧 탭 진입/이탈 이벤트 바인딩
+async function prepareCreditsTab() {
+    await loadCredits()
+}
+
+// Settings navigation item event handling
 const navItems = document.getElementsByClassName('settingsNavItem')
 let lastSelectedTab = null
 
@@ -1661,12 +1668,10 @@ for (let nav of navItems) {
     nav.addEventListener('click', () => {
         const currentTab = nav.getAttribute('rSc')
         if(currentTab === 'settingsTabCredits') {
-            // 크레딧 탭으로 들어올 때만 로드
             if(lastSelectedTab !== currentTab) {
                 loadCredits()
             }
         } else if(lastSelectedTab === 'settingsTabCredits') {
-            // 크레딧 탭에서 나갈 때 페이드아웃 및 스크롤 초기화
             fadeOutCredits()
             const creditsContainer = document.getElementById('creditsContainer')
             if(creditsContainer) {
@@ -1675,11 +1680,6 @@ for (let nav of navItems) {
         }
         lastSelectedTab = currentTab
     })
-}
-
-// 초기 크레딧 로드
-async function prepareCreditsTab() {
-    await loadCredits()
 }
 
 /**

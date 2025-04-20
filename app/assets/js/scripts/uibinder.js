@@ -523,7 +523,11 @@ function updateUIComponents() {
             button4: () => shell.openExternal('https://ch.sooplive.co.kr/leemy689'),
             button5: async () => {
                 await prepareSettings()
-                switchView(getCurrentView(), VIEWS.credits)
+                switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
+                    // id가 아니라 rSc 속성으로 찾기
+                    const creditsNavBtn = document.querySelector('.settingsNavItem[rSc="settingsTabCredits"]')
+                    if (creditsNavBtn) settingsNavItemListener(creditsNavBtn, false)
+                })
             },
             button6: async () => {
                 await prepareSettings()
