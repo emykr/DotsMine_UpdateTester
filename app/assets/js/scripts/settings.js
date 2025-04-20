@@ -1675,6 +1675,13 @@ window.addCreditEntry = function(entry) {
 }
 
 /**
+ * 크레딧 탭을 준비하고 데이터를 로드합니다.
+ */
+async function prepareCreditsTab() {
+    await loadCredits()
+}
+
+/**
  * Settings preparation functions.
  */
 
@@ -1694,6 +1701,7 @@ async function prepareSettings(first = false) {
     await initSettingsValues()
     prepareAccountsTab()
     await prepareJavaTab()
+    await prepareCreditsTab()
     prepareAboutTab()
 }
 

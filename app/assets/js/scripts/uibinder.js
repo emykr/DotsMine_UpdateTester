@@ -8,7 +8,8 @@ const { Type }      = require('helios-distribution-types')
 
 const AuthManager   = require('./assets/js/authmanager')
 const ConfigManager = require('./assets/js/configmanager')
-const { DistroAPI } = require('./assets/js/distromanager')
+const { DistroAPI } = require('./assets/js/distromanager') 
+
 
 let rscShouldLoad = false
 let fatalStartupError = false
@@ -19,6 +20,7 @@ const VIEWS = {
     loginOptions: '#loginOptionsContainer',
     login: '#loginContainer',
     settings: '#settingsContainer',
+    credits: '#creditsContainer',
     welcome: '#welcomeContainer',
     waiting: '#waitingContainer',
     overlay: '#overlayContainer'
@@ -521,7 +523,7 @@ function updateUIComponents() {
             button4: () => shell.openExternal('https://ch.sooplive.co.kr/leemy689'),
             button5: async () => {
                 await prepareSettings()
-                switchView(getCurrentView(), VIEWS.settings)
+                switchView(getCurrentView(), VIEWS.credits)
             },
             button6: async () => {
                 await prepareSettings()

@@ -4226,3 +4226,98 @@ input:checked + .toggleSwitchSlider:before {
     object-fit: contain; /* 항상 비율 유지 */
 }
 
+/* Credits Container Styles */
+#creditsContainer {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.50);
+    overflow-y: auto;
+    padding: 20px;
+}
+
+#creditsContent {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.creditItem {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(126, 126, 126, 0.57);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.creditImageContainer {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.creditImage {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+.creditImage:hover {
+    transform: scale(1.05);
+}
+
+.creditContentContainer {
+    text-align: center;
+}
+
+.creditItem h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.creditItem p {
+    color: #cccccc;
+    margin: 5px 0;
+}
+
+.creditItem ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.creditItem li {
+    color: #cccccc;
+    margin: 5px 0;
+}
+
+/* Image alignment classes */
+.image-align-left {
+    justify-content: flex-start;
+}
+
+.image-align-center {
+    justify-content: center;
+}
+
+.image-align-right {
+    justify-content: flex-end;
+}
+
+/* Image position classes */
+.image-position-top {
+    order: -1;
+}
+
+.image-position-bottom {
+    order: 1;
+}
+
