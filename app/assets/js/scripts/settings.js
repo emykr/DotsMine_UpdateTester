@@ -1563,6 +1563,27 @@ const CREDITS_JSON_PATH = './assets/credit/credit.json'
 const creditsContent = document.getElementById('creditsContent')
 let creditsFadeTimeout = null
 
+// 크레딧 데이터 캐시 변수
+let cachedCredits = null
+
+async function loadCredits() {
+    try {
+        // 캐시된 데이터가 있으면 그걸 사용
+        if(cachedCredits) {
+            renderCredits(cachedCredits)
+            return
+        }
+        
+        // 없으면 새로 불러오기
+        const res = await fetch(CREDITS_JSON_PATH)
+        const credits = await res.json()
+        cachedCredits = credits  // 데이터 캐시
+        renderCredits(credits)
+    } catch (e) {
+        creditsContent.innerHTML = '<div style="color:#f66">크레딧 정보를 불러올 수 없습니다.</div>'
+    }
+}
+
 function renderCredits(credits) {
     creditsContent.innerHTML = ''
     credits.forEach((entry, idx) => {
@@ -1617,16 +1638,6 @@ function renderCredits(credits) {
     })
 }
 
-async function loadCredits() {
-    try {
-        const res = await fetch(CREDITS_JSON_PATH)
-        const credits = await res.json()
-        renderCredits(credits)
-    } catch (e) {
-        creditsContent.innerHTML = '<div style="color:#f66">크레딧 정보를 불러올 수 없습니다.</div>'
-    }
-}
-
 function fadeOutCredits() {
     const items = creditsContent.querySelectorAll('.creditItem')
     items.forEach((item, idx) => {
@@ -1644,33 +1655,29 @@ function fadeOutCredits() {
 
 // 크레딧 탭 진입/이탈 이벤트 바인딩
 const navItems = document.getElementsByClassName('settingsNavItem')
+let lastSelectedTab = null
+
 for (let nav of navItems) {
-    if (nav.getAttribute('rSc') === 'settingsTabCredits') {
-        nav.addEventListener('click', () => {
-            loadCredits()
-        })
-    } else {
-        nav.addEventListener('click', () => {
+    nav.addEventListener('click', () => {
+        const currentTab = nav.getAttribute('rSc')
+        if(currentTab === 'settingsTabCredits') {
+            // 크레딧 탭으로 들어올 때만 로드
+            if(lastSelectedTab !== currentTab) {
+                loadCredits()
+            }
+        } else if(lastSelectedTab === 'settingsTabCredits') {
+            // 크레딧 탭에서 나갈 때 페이드아웃 및 스크롤 초기화
             fadeOutCredits()
-        })
-    }
+            const creditsContainer = document.getElementById('creditsContainer')
+            if(creditsContainer) {
+                creditsContainer.scrollTop = 0
+            }
+        }
+        lastSelectedTab = currentTab
+    })
 }
 
-// 크레딧 추가 인터페이스 예시 (관리자/개발자용)
-window.addCreditEntry = function(entry) {
-    // entry: { title, name/names, image }
-    fetch(CREDITS_JSON_PATH)
-        .then(res => res.json())
-        .then(credits => {
-            credits.push(entry)
-            // 실제 파일 저장은 백엔드 필요. Electron 환경에서는 fs로 저장 가능.
-            // 예시: require('fs').writeFileSync(CREDITS_JSON_PATH, JSON.stringify(credits, null, 2))
-        })
-}
-
-/**
- * 크레딧 탭을 준비하고 데이터를 로드합니다.
- */
+// 초기 크레딧 로드
 async function prepareCreditsTab() {
     await loadCredits()
 }
