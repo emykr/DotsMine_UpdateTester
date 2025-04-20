@@ -827,3 +827,56 @@ exports.getAllowPrerelease = function(def = false){
 exports.setAllowPrerelease = function(allowPrerelease){
     config.settings.launcher.allowPrerelease = allowPrerelease
 }
+
+/**
+ * Get options.txt file path from game_options directory
+ * 
+ * @returns {string} The path to the options.txt file
+ */
+exports.getOptionsPath = function(){
+    return path.join(__dirname, '../../assets/game_options/options.txt')
+}
+
+/**
+ * Load game options from file
+ * 
+ * @returns {Promise<string>} The options.txt content
+ */
+exports.loadGameOptions = async function(){
+    try {
+        const optionsPath = exports.getOptionsPath()
+        const exists = await fs.pathExists(optionsPath)
+        
+        if(!exists){
+            // Create game_options directory if it doesn't exist
+            await fs.ensureDir(path.dirname(optionsPath))
+            // Create default options.txt
+            await fs.writeFile(optionsPath, 'version:3465\n')
+            logger.info('Created default options.txt')
+        }
+        
+        const data = await fs.readFile(optionsPath, 'utf-8')
+        return data
+    } catch(err){
+        logger.error('Failed to load game options:', err)
+        return null
+    }
+}
+
+/**
+ * Save game options to file
+ * 
+ * @param {string} content The options content to save
+ * @returns {Promise<boolean>} Whether save was successful
+ */
+exports.saveGameOptions = async function(content){
+    try {
+        const optionsPath = exports.getOptionsPath()
+        await fs.writeFile(optionsPath, content)
+        logger.info('Saved game options')
+        return true
+    } catch(err){
+        logger.error('Failed to save game options:', err)
+        return false
+    }
+}
