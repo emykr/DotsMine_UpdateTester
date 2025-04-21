@@ -2,3 +2,5 @@ node_modules
 dist/win-unpacked
 dist/*.yml
 .icon-ico
+dist
+.DS_Store
