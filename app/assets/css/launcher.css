@@ -3422,25 +3422,35 @@ input:checked + .toggleSwitchSlider:before {
 
 /* Launch details main container, hidden until launch processing begins. */
 #launch_details {
-    position: relative;
-    top: 25px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 300px;
 }
- 
+
 /* Left side of launch details container, displays percentage and a divider. */
 #launch_details_left {
     display: flex;
+    margin-bottom: 15px;
 }
 
 /* Span which displays percentage complete. */
 #launch_progress_label {
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-shadow: 0px 0px 0px #bebcbb;
+    font-weight: bold;
+    color: #fff;
     font-size: 20px;
-    min-width: 53.21px;
-    max-width: 53.21px;
-    text-align: right;
+    min-width: 70px;
+    text-align: center;
 }
 
 /* Right side of launch details container, displays progress bar and details. */
@@ -3470,24 +3480,35 @@ input:checked + .toggleSwitchSlider:before {
 }
 
 /* Progress bar styles. */
-#launch_progress[value] {
-    height: 3px;
-    width: 265px;
-    -webkit-appearance: none;
+#launch_progress {
+    width: 300px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
 }
-#launch_progress[value]::-webkit-progress-bar {
-    background-color: transparent;
+
+#launch_progress::-webkit-progress-bar {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
 }
-#launch_progress[value]::-webkit-progress-value {
-    background-color: #fff;
+
+#launch_progress::-webkit-progress-value {
+    background-color: #00b400;
+    border-radius: 10px;
+    transition: width 0.2s ease;
 }
 
 /* Span which displays information about the status of the launch process. */
 #launch_details_text {
-    font-size: 11px;
-    text-overflow: ellipsis;
+    font-size: 16px;
+    text-align: center;
+    margin: 15px 0;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+    color: #fff;
 }
 
 /*******************************************************************************

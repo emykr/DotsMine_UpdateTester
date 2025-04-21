@@ -166,6 +166,10 @@ start_button.addEventListener('click', async () => {
 })
 
 async function startGame() {
+    if(proc != null || isLaunching) {
+        return // 이미 실행 중이면 중복 실행 방지
+    }
+
     loggerLanding.info('Starting game..')
     try {
         isLaunching = true
@@ -174,7 +178,7 @@ async function startGame() {
         const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
         const jExe = ConfigManager.getJavaExecutable(ConfigManager.getSelectedServer())
         
-        // Add loading bar container
+        // 로딩 바 컨테이너 추가
         if(!start_button.querySelector('.progress-fill')) {
             const progressFill = document.createElement('div')
             progressFill.className = 'progress-fill'
@@ -202,20 +206,22 @@ async function startGame() {
             Lang.queryJS('landing.launch.failureTitle'), 
             Lang.queryJS('landing.launch.failureText')
         )
-    } finally {
-        isLaunching = false
     }
 }
 
 // 게임이 실제로 시작되었는지 확인하는 함수
 function onGameLaunchComplete() {
+    isLaunching = false // 실행 상태 해제
+    toggleLaunchArea(false) // 로딩 UI 숨기기
+    setLaunchEnabled(true) // 시작 버튼 활성화
+
     // 로딩 상태 제거
-    start_button.classList.remove('loading')
-    const progressFill = start_button.querySelector('.progress-fill')
+    const startButton = document.getElementById('start_button')
+    startButton.classList.remove('loading')
+    const progressFill = startButton.querySelector('.progress-fill')
     if(progressFill) {
         progressFill.style.width = '0%'
     }
-    setLaunchEnabled(true)
 }
 
 // Bind settings button

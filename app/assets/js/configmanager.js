@@ -829,12 +829,14 @@ exports.setAllowPrerelease = function(allowPrerelease){
 }
 
 /**
- * Get options.txt file path from game_options directory
+ * Get options.txt file path
  * 
  * @returns {string} The path to the options.txt file
  */
 exports.getOptionsPath = function(){
-    return path.join(__dirname, '../../assets/game_options/options.txt')
+    const instanceDir = exports.getInstanceDirectory()
+    const selectedServerId = exports.getSelectedServer()
+    return path.join(instanceDir, selectedServerId, 'user_options', 'options.txt')
 }
 
 /**
@@ -848,11 +850,12 @@ exports.loadGameOptions = async function(){
         const exists = await fs.pathExists(optionsPath)
         
         if(!exists){
-            // Create game_options directory if it doesn't exist
+            // Create user_options directory if it doesn't exist
             await fs.ensureDir(path.dirname(optionsPath))
+            
             // Create default options.txt
             await fs.writeFile(optionsPath, 'version:3465\n')
-            logger.info('Created default options.txt')
+            logger.info('Created default user options.txt')
         }
         
         const data = await fs.readFile(optionsPath, 'utf-8')
@@ -872,6 +875,7 @@ exports.loadGameOptions = async function(){
 exports.saveGameOptions = async function(content){
     try {
         const optionsPath = exports.getOptionsPath()
+        await fs.ensureDir(path.dirname(optionsPath))
         await fs.writeFile(optionsPath, content)
         logger.info('Saved game options')
         return true
