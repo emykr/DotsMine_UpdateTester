@@ -8,9 +8,7 @@ const { Type }              = require('helios-distribution-types')
 const os                    = require('os')
 const path                  = require('path')
 const chokidar              = require('chokidar')
-
 const ConfigManager            = require('./configmanager')
-
 const logger = LoggerUtil.getLogger('ProcessBuilder')
 
 

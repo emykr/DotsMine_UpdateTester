@@ -1,6 +1,6 @@
 {
   "name": "seadriver-games-launcher",
-  "version": "2.0.35",
+  "version": "3.0.57",
   "productName": "SeaDriver Games Launcher",
   "description": "HeliosLauncher for SeaDriver Games",
   "author": "Daniel Scalzi (https://github.com/dscalzi/)",
@@ -14,7 +14,7 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder build",
-    "dist:win": "npm run dist -- -w",
+    "dist:win": "npm run dist -- -w",                 
     "dist:mac": "npm run dist -- -m",
     "dist:linux": "npm run dist -- -l",
     "lint": "eslint --config .eslintrc.json ."
