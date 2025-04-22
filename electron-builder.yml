@@ -1,8 +1,8 @@
 appId: 'SeaDriverGames.DotsMineLauncher'
 productName: 'SeaDriverGames-Launcher'
-artifactName: '${productName}-setup-${version}.${ext}'
+artifactName: '${productName}-setup-Stable-${version}.${ext}'
 
-copyright: 'Copyright © 2023 SeaDriver Games. All Rights Reserved.'
+copyright: 'Copyright © 2025 SeaDriver Games. All Rights Reserved.'
 
 asar: true
 compression: 'maximum'

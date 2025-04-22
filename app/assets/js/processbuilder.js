@@ -39,70 +39,60 @@ class ProcessBuilder {
         this.usingFabricLoader = false
         this.llPath = null
 
-        // 옵션 파일 경로 설정
-        this.defaultOptionsPath = path.join(__dirname, '../../assets/game_options/options.txt')
-        this.gameDir = path.join(ConfigManager.getInstanceDirectory(), distroServer.rawServer.id)
-        this.gameOptionsPath = path.join(this.gameDir, 'options.txt')
-        this.storageOptionsPath = path.join(ConfigManager.getCommonDirectory(), 'assets/game_options/options.txt')
+                                             // 옵션 파일 경로 
+        this.defaultOptionsPath = path.join(__dirname, '../../assets/game_options/default.txt')
+        this.instanceOptionsPath = path.join(this.gameDir, 'options.txt')
     }
 
     /**
      * 게임 옵션 파일 설정
+     * default.txt를 options.txt로 복사
      */
     async setupOptionsFile() {
         try {
-            // 1. 게임 디렉토리 생성
+            // 게임 디렉토리 생성
             await fs.ensureDir(this.gameDir)
-            await fs.ensureDir(path.dirname(this.storageOptionsPath))
-
-            // 2. 최초 실행 시 기본 옵션 파일 복사 
-            if(!await fs.pathExists(this.storageOptionsPath)) {
-                await fs.copy(this.defaultOptionsPath, this.storageOptionsPath)
-                logger.info('최초 실행: 기본 옵션 파일이 복사되었습니다')
+            
+            const instanceExists = await fs.pathExists(this.instanceOptionsPath)
+            if(!instanceExists) {
+                // options.txt가 없을 때만 default.txt에서 복사
+                await fs.copy(this.defaultOptionsPath, this.instanceOptionsPath)
+                logger.info('Created options.txt from default.txt')
             }
 
-            // 3. 게임 시작 전 저장된 옵션 파일을 게임 폴더로 복사
-            await fs.copy(this.storageOptionsPath, this.gameOptionsPath)
-            logger.info('게임 옵션 파일이 로드되었습니다')
-
-            // 4. 게임 중 옵션 파일 변경 감시
+            // 옵션 파일 변경 감시 설정
             this.watchOptionsFile()
 
         } catch (err) {
-            logger.error('옵션 파일 설정 중 오류:', err)
-            
-            // 오류 시 기본 옵션으로 복구
-            try {
-                await fs.copy(this.defaultOptionsPath, this.gameOptionsPath)
-                logger.info('기본 옵션으로 복구되었습니다')
-            } catch (restoreErr) {
-                logger.error('옵션 파일 복구 실패:', restoreErr)
-            }
-        }
+            logger.error('Failed to setup options:', err)
+            throw err
+        } 
     }
 
     /**
      * 옵션 파일 변경 감시
+     * 게임 중 변경된 옵션을 감지
      */
     watchOptionsFile() {
-        // 이전 감시자 제거
         if(this.optionsWatcher) {
             this.optionsWatcher.close()
         }
 
-        this.optionsWatcher = chokidar.watch(this.gameOptionsPath, {
+        this.optionsWatcher = chokidar.watch(this.instanceOptionsPath, {
             persistent: true,
-            ignoreInitial: true
+            ignoreInitial: true,
+            awaitWriteFinish: {
+                stabilityThreshold: 2000,
+                pollInterval: 100
+            }
         })
 
-        // 파일 변경 감지 시 storage로 복사
-        this.optionsWatcher.on('change', async () => {
-            try {
-                await fs.copy(this.gameOptionsPath, this.storageOptionsPath)
-                logger.info('옵션 파일이 저장되었습니다')
-            } catch (err) {
-                logger.error('옵션 파일 저장 중 오류:', err)
-            }
+        this.optionsWatcher.on('change', (path) => {
+            logger.info('Options file changed:', path)
+        })
+
+        this.optionsWatcher.on('error', (error) => {
+            logger.error('Error watching options file:', error)
         })
     }
 

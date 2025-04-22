@@ -2506,14 +2506,18 @@ input:checked + .toggleSwitchSlider:before {
     top: 0px;
     height: 100%;
     width: 34%;
-    display: inline-flex;
+    display: flex;
     justify-content: center;
+    align-items: center;
 }
 #landingContainer > #lower > #center #content {
     position: relative;
     z-index: 500;
     transition: top 2s ease;
-    top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 #landingContainer > #lower > #right {
     position: relative;
@@ -3422,9 +3426,9 @@ input:checked + .toggleSwitchSlider:before {
 
 /* Launch details main container, hidden until launch processing begins. */
 #launch_details {
-    position: fixed;
-    left: 50%;
+    position: absolute;
     top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     display: none;
     align-items: center;
@@ -3432,7 +3436,7 @@ input:checked + .toggleSwitchSlider:before {
     flex-direction: column;
     text-align: center;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.85);
     padding: 20px;
     border-radius: 10px;
     min-width: 300px;
@@ -3442,6 +3446,8 @@ input:checked + .toggleSwitchSlider:before {
 #launch_details_left {
     display: flex;
     margin-bottom: 15px;
+    justify-content: center;
+    width: 100%;
 }
 
 /* Span which displays percentage complete. */
@@ -3458,6 +3464,8 @@ input:checked + .toggleSwitchSlider:before {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 /* Button which opens the server selection view. */
@@ -3531,7 +3539,6 @@ input:checked + .toggleSwitchSlider:before {
     justify-content: center;
     width: 100%;
     height: calc(100% - 22px);
-    background: rgba(0, 0, 0, 0.50);
 }
 
 /* Main overlay content. */
@@ -3544,6 +3551,11 @@ input:checked + .toggleSwitchSlider:before {
     box-sizing: border-box;
     padding: 15px 0px;
     text-align: center;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    position: fixed !important;
+    text-align: center !important;
 }
 
 /* Main overlay content anchor styles. */
@@ -4162,6 +4174,10 @@ input:checked + .toggleSwitchSlider:before {
     filter: brightness(1.2);
 }
 
+.start-button.error {
+    background: rgba(255, 0, 0, 0.85);
+}
+
 .server-status {
     position: fixed;
     top: calc(4.5vh + 10px);
@@ -4313,5 +4329,20 @@ input:checked + .toggleSwitchSlider:before {
 .creditItem li {
     color: #cccccc;
     margin: 5px 0;
+}
+
+#serverStatusContainer {
+    position: fixed;
+    top: calc(4.5vh + 10px);
+    right: calc(10vw);
+    z-index: 10;
+}
+
+.server-status {
+    width: calc(15.6vw);
+    height: auto;
+    object-fit: contain;
+    transition: 0.3s ease-in-out;
+    opacity: 1;
 }
 

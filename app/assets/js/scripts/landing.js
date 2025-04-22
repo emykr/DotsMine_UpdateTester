@@ -78,16 +78,18 @@ function setLaunchPercentage(percent){
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
     
-    // 시작 버튼 로딩 바 업데이트
     const startButton = document.getElementById('start_button')
-    const progressFill = startButton.querySelector('.progress-fill')
-    
-    if(percent > 0) {
-        startButton.classList.add('loading')
-        progressFill.style.width = percent + '%'
-    } else {
-        startButton.classList.remove('loading')
-        progressFill.style.width = '0%'
+    if(startButton) {
+        const progressFill = startButton.querySelector('.progress-fill')
+        if(progressFill) {
+            if(percent > 0 && percent < 100) {
+                startButton.classList.add('loading')
+                progressFill.style.width = percent + '%'
+            } else if(percent >= 100) {
+                // 100%에 도달했을 때는 상태를 바로 초기화하지 않음
+                progressFill.style.width = '100%'
+            }
+        }
     }
 }
 
@@ -109,28 +111,40 @@ function setDownloadPercentage(percent){
  * 
  * @param {boolean} val True to enable, false to disable.
  */
-function setLaunchEnabled(val){
+function setLaunchEnabled(val) {
     const startButton = document.getElementById('start_button')
-    
-    if(val) {
-        startButton.disabled = false
-        startButton.classList.remove('loading')
-        startButton.querySelector('.progress-fill').style.width = '0%'
-    } else {
-        startButton.disabled = true
+    if(startButton) {
+        startButton.disabled = !val
+        if(val) {
+            startButton.classList.remove('loading')
+            startButton.classList.remove('error')
+            const progressFill = startButton.querySelector('.progress-fill')
+            if(progressFill) {
+                progressFill.style.width = '0%'
+            }
+        }
     }
 }
 
 // Enable/disable start button based on server selection
 function setStartButtonEnabled(enabled) {
-    if(start_button) {
-        start_button.style.opacity = enabled ? '1' : '0.5'
-        start_button.style.cursor = enabled ? 'pointer' : 'not-allowed'
-        start_button.disabled = !enabled
+    const startButton = document.getElementById('start_button')
+    if(startButton) {
+        startButton.disabled = !enabled
+        startButton.style.opacity = enabled ? '1' : '0.5'
+        startButton.style.cursor = enabled ? 'pointer' : 'not-allowed'
+        
+        if(!enabled) {
+            startButton.classList.remove('loading')
+            const progressFill = startButton.querySelector('.progress-fill')
+            if(progressFill) {
+                progressFill.style.width = '0%'
+            }
+        }
     }
 }
 
-// 게임이 실행중인지 확인하는 변수
+// 게임 실행 상태 확인 변수
 let proc = null 
 let isLaunching = false
 
@@ -138,26 +152,32 @@ let isLaunching = false
 const start_button = document.getElementById('start_button')
 
 // Start button click handler
-start_button.addEventListener('click', async () => {
-    // 게임이 실행중이거나 실행 시도중인 경우
+document.getElementById('start_button').addEventListener('click', async () => {
     if(proc != null || isLaunching) {
-        // 오버레이 컨텐츠 설정
         setOverlayContent(
             Lang.queryJS('landing.launch.alreadyRunningTitle'),
             Lang.queryJS('landing.launch.alreadyRunningText'),
             Lang.queryJS('landing.launch.alreadyRunningConfirm'),
             Lang.queryJS('landing.launch.alreadyRunningCancel')
         )
-        // 확인 버튼 클릭 시 동작 설정
         setOverlayHandler(() => {
             toggleOverlay(false)
-            startGame() // 게임 시작 실행
+            startGame()
         })
-        // 취소 버튼 클릭 시 동작 설정 
         setDismissHandler(() => {
             toggleOverlay(false)
         })
-        // 오버레이 표시
+        // overlay 중앙 정렬 스타일 적용
+        setTimeout(() => {
+            const overlay = document.getElementById('overlayContent')
+            if(overlay) {
+                overlay.style.top = '50%'
+                overlay.style.left = '50%'
+                overlay.style.transform = 'translate(-50%, -50%)'
+                overlay.style.position = 'fixed'
+                overlay.style.textAlign = 'center'
+            }
+        }, 10)
         toggleOverlay(true, true)
         return
     }
@@ -215,13 +235,22 @@ function onGameLaunchComplete() {
     toggleLaunchArea(false) // 로딩 UI 숨기기
     setLaunchEnabled(true) // 시작 버튼 활성화
 
-    // 로딩 상태 제거
     const startButton = document.getElementById('start_button')
-    startButton.classList.remove('loading')
-    const progressFill = startButton.querySelector('.progress-fill')
-    if(progressFill) {
-        progressFill.style.width = '0%'
+    if(startButton) {
+        startButton.classList.remove('loading')
+        startButton.classList.remove('error')
+        startButton.disabled = false
+        // start_button.png가 반드시 보이도록 backgroundImage 강제 지정
+        startButton.style.background = "url('assets/images/duckarmri/start_button.png') no-repeat"
+        startButton.style.backgroundSize = 'contain'
+        const progressFill = startButton.querySelector('.progress-fill')
+        if(progressFill) {
+            progressFill.style.width = '0%'
+        }
     }
+    
+    // OS progress bar 초기화
+    remote.getCurrentWindow().setProgressBar(-1)
 }
 
 // Bind settings button
@@ -386,6 +415,12 @@ function showLaunchFailure(title, desc){
     setOverlayHandler(null)
     toggleOverlay(true)
     toggleLaunchArea(false)
+    
+    // 에러 상태 표시
+    const startButton = document.querySelector('.start-button')
+    if(startButton) {
+        startButton.classList.add('error')
+    }
 }
 
 /* System (Java) Scan */
@@ -664,8 +699,20 @@ async function dlAsync(login = true) {
                 }
                 proc.stdout.removeListener('data', tempListener)
                 proc.stderr.removeListener('data', gameErrorListener)
+                
+                // 로딩 상태 초기화
+                const startButton = document.querySelector('.start-button')
+                if(startButton) {
+                    startButton.classList.remove('loading')
+                    startButton.classList.remove('error')
+                    startButton.disabled = false
+                    const progressFill = startButton.querySelector('.progress-fill')
+                    if(progressFill) {
+                        progressFill.style.width = '0%'
+                    }
+                }
             }
-            
+
             const start = Date.now()
             
             const tempListener = function(data){
@@ -707,9 +754,13 @@ async function dlAsync(login = true) {
                 throw new Error('Failed to create game process')
             }
 
-            // Bind listeners
-            proc.stdout.on('data', tempListener)
-            proc.stderr.on('data', gameErrorListener)
+            // Bind listeners (proc가 정의된 경우에만)
+            if(proc.stdout && proc.stdout.on) {
+                proc.stdout.on('data', tempListener)
+            }
+            if(proc.stderr && proc.stderr.on) {
+                proc.stderr.on('data', gameErrorListener)
+            }
 
             setLaunchDetails(Lang.queryJS('landing.dlAsync.doneEnjoyServer'))
 
@@ -717,26 +768,38 @@ async function dlAsync(login = true) {
             if(distro.rawDistribution.discord != null && serv.rawServer.discord != null){
                 DiscordWrapper.initRPC(distro.rawDistribution.discord, serv.rawServer.discord)
                 hasRPC = true
-                proc.on('close', (code, signal) => {
-                    loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
-                    DiscordWrapper.shutdownRPC()
-                    hasRPC = false
-                    proc = null
-                    isLaunching = false
-                })
+                if(proc && proc.on) {
+                    proc.on('close', (code, signal) => {
+                        loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
+                        DiscordWrapper.shutdownRPC()
+                        hasRPC = false
+                        proc = null
+                        isLaunching = false
+                        onGameLaunchComplete()
+                    })
+                }
             } else {
-                proc.on('close', (code, signal) => {
-                    loggerLaunchSuite.info('Game process terminated')
-                    proc = null
-                    isLaunching = false
-                })
+                if(proc && proc.on) {
+                    proc.on('close', (code, signal) => {
+                        loggerLaunchSuite.info('Game process terminated')
+                        proc = null
+                        isLaunching = false
+                        onGameLaunchComplete()
+                    })
+                }
             }
+            // 게임 프로세스가 시작되면 2초 뒤에 무조건 로딩바를 숨김
+            setTimeout(() => {
+                onGameLaunchComplete()
+            }, 2000)
         }
     } catch(err) {
         loggerLaunchSuite.error('Error during launch', err)
         showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringLaunchTitle'), err.message || Lang.queryJS('landing.dlAsync.checkConsoleForDetails'))
         proc = null
         isLaunching = false
+        // 에러 발생 시에도 로딩바/버튼 UI 초기화
+        onGameLaunchComplete()
     }
 
 }
@@ -1062,13 +1125,13 @@ function displayArticle(articleObject, index){
  * distribution index.
  */
 async function loadNews(){
-
     const distroData = await DistroAPI.getDistribution()
-    if(!distroData.rawDistribution.rss) {
-        loggerLanding.debug('No RSS feed provided.')
+    if(!distroData.rawDistribution.rss || typeof distroData.rawDistribution.rss !== 'string' || !/^https?:\/\//.test(distroData.rawDistribution.rss)) {
+        loggerLanding.debug('No valid RSS feed provided.')
         return null
     }
-
+    const newsFeed = distroData.rawDistribution.rss
+    const newsHost = new URL(newsFeed).origin + '/'
     const promise = new Promise((resolve, reject) => {
         
         const newsFeed = distroData.rawDistribution.rss

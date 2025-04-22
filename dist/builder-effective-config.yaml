@@ -3,8 +3,8 @@ directories:
   buildResources: build
 appId: SeaDriverGames.DotsMineLauncher
 productName: SeaDriverGames-Launcher
-artifactName: ${productName}-setup-${version}.${ext}
-copyright: Copyright © 2023 SeaDriver Games. All Rights Reserved.
+artifactName: ${productName}-setup-Stable-${version}.${ext}
+copyright: Copyright © 2025 SeaDriver Games. All Rights Reserved.
 asar: true
 compression: maximum
 files:

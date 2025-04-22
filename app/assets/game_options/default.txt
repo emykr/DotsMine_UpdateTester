@@ -1,0 +1,10 @@
+version:3465
+lang:ko_kr
+useVbo:true
+enableVsync:false
+renderDistance:12
+guiScale:0
+fullscreen:false
+bobView:true
+maxFps:0
+soundCategory_music:0.0
