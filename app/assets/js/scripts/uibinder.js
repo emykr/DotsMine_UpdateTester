@@ -303,7 +303,7 @@ function scanOptionalSubModules(mdls, origin){
         if(Object.keys(mods).length > 0){
             const ret = {
                 mods
-            }
+            } 
             if(!origin.getRequired().value){
                 ret.value = origin.getRequired().def
             }

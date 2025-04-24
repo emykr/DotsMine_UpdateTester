@@ -2468,7 +2468,10 @@ input:checked + .toggleSwitchSlider:before {
     justify-content: flex-end;
 }
 #landingContainer > #upper > #content {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 70%;
     height: 100%;
 }
@@ -2859,21 +2862,23 @@ input:checked + .toggleSwitchSlider:before {
 
 /* Logo image. */
 #image_seal {
-    height: 70px;
+    height: 120px; /* 크기를 더 크게 조정 */
     width: auto;
-    position: relative;
-    border: 2px solid white;
+    position: absolute;
+    top: 20px; /* 상단 여백 조정 */
+    left: 20px; /* 좌측 여백 조정 */
+    border: none; /* 테두리 제거 */
     box-sizing: border-box;
-    border-radius: 50%;
+    border-radius: 0; /* 원형 테두리 제거 */
 }
 
 /* Logo container styles. */
 #image_seal_container {
     position: relative;
-    height: 70px;
-    width: 70px;
-    border-radius: 50%;
-    margin-top: 50px;
+    height: 120px;
+    width: 120px;
+    border-radius: 0;
+    margin: 0; /* 여백 제거 */
 }
 
 /* Logo container styles w/ update. */
@@ -2889,7 +2894,7 @@ input:checked + .toggleSwitchSlider:before {
     width: 100%;
     top: 0%;
     left: 0%;
-    border-radius: 50%;
+    border-radius: 0;
     box-shadow: 0 0 15px #43c628;
     animation: glow-grow 4s ease-out infinite;
     background: rgba(0, 0, 0, 0.15);
@@ -4080,7 +4085,6 @@ input:checked + .toggleSwitchSlider:before {
     transition: all 0.3s ease;
 }
 
-/* 추가된 스타일 */
 .button-right-container {
     position: fixed;
     top: 45%;
@@ -4131,15 +4135,15 @@ input:checked + .toggleSwitchSlider:before {
 }
 
 .start-button {
-    position: fixed;
-    bottom: calc(2.8vh + 10px);
-    right: calc(1.5vw);
-    width: auto;
-    height: 95px;
+    position: absolute;
+    bottom: -260px;
+    right: 90px;
+    width: 450px;
+    height: 100px;
     object-fit: contain;
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 100;
+    z-index: 10;
     background: url('../images/duckarmri/start_button.png') no-repeat;
     background-size: contain;
 }
@@ -4179,13 +4183,15 @@ input:checked + .toggleSwitchSlider:before {
 }
 
 .server-status {
-    position: fixed;
-    top: calc(4.5vh + 10px);
-    right: calc(10vw);
-    width: calc(15.6vw); /* 1280px 기준 200px -> 15.6vw */
+    width: calc(15.6vw);
     height: auto;
     object-fit: contain;
-    z-index: 10;
+    opacity: 1 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: block;
+    transition: none;
 }
 
 #mainImageContainer {
@@ -4242,8 +4248,8 @@ input:checked + .toggleSwitchSlider:before {
     left: 35%;
     top: 45%;
     transform: translate(-50%, -50%);
-    width: 65%;  /* 50%에서 100%로 변경 */
-    height: 65%; /* 50%에서 100%로 변경 */
+    width: 55%;  /* 50%에서 100%로 변경 */
+    height: 55%; /* 50%에서 100%로 변경 */
     z-index: 1;
     display: flex;
     justify-content: center;
@@ -4342,7 +4348,44 @@ input:checked + .toggleSwitchSlider:before {
     width: calc(15.6vw);
     height: auto;
     object-fit: contain;
-    transition: 0.3s ease-in-out;
-    opacity: 1;
+    opacity: 1 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: block;
+    transition: none;
+}
+
+#content img[src*="duckarmri.png"] {
+    display: block;
+    margin: 0 auto;
+    max-width: 300px;
+    padding-top: 30px;
+    margin-bottom: 20px;
+    pointer-events: none;
+    user-select: none;
+    transition: transform 0.3s ease;
+}
+
+#content img[src*="duckarmri.png"]:hover {
+    transform: scale(1.05);
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.logo-image {
+    max-width: 300px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
 }
 

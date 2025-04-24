@@ -12,6 +12,7 @@ const semver                            = require('semver')
 const { pathToFileURL }                 = require('url')
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants')
 const LangLoader                        = require('./app/assets/js/langloader')
+const net = require('net')
 
 // Setup Lang
 LangLoader.setupLanguage()
@@ -229,7 +230,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1280,
         height: 720,
-        icon: getPlatformIcon('seadriver'),
+        icon: getPlatformIcon('DotsMine_Logo'),
         frame: false,
         webPreferences: {
             preload: path.join(__dirname, 'app', 'assets', 'js', 'preloader.js'),

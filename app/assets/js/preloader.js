@@ -2,6 +2,7 @@ const {ipcRenderer}  = require('electron')
 const fs             = require('fs-extra')
 const os             = require('os')
 const path           = require('path')
+const net            = require('net')
 
 const ConfigManager  = require('./configmanager')
 const { DistroAPI }  = require('./distromanager')
@@ -24,6 +25,42 @@ DistroAPI['instanceDir'] = ConfigManager.getInstanceDirectory()
 
 // Load Strings
 LangLoader.setupLanguage()
+
+// Server Status Check Function
+function checkServerStatus(address = 'godlightdev.kro.kr', port = 25565) {
+    return new Promise((resolve) => {
+        const socket = net.connect({
+            host: address,
+            port: port,
+            timeout: 3000
+        }, () => {
+            const pingBuf = Buffer.from([0xFE, 0x01])
+            socket.write(pingBuf)
+        })
+
+        socket.on('data', () => {
+            socket.end()
+            resolve(true)
+        })
+
+        socket.on('error', () => {
+            socket.destroy()
+            resolve(false)
+        })
+
+        socket.on('timeout', () => {
+            socket.destroy()
+            resolve(false)
+        })
+    })
+}
+
+// Receive check-server-status request from renderer
+ipcRenderer.on('check-server-status', async () => {
+    const isOnline = await checkServerStatus()
+    // Send the result back to renderer
+    ipcRenderer.sendToHost('server-status-update', isOnline)
+})
 
 /**
  * 
