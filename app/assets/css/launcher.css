@@ -4245,8 +4245,8 @@ input:checked + .toggleSwitchSlider:before {
 
 #Subbackground {
     position: fixed;
-    left: 35%;
-    top: 45%;
+    left: 32%;
+    top: 55%;
     transform: translate(-50%, -50%);
     width: 55%;  /* 50%에서 100%로 변경 */
     height: 55%; /* 50%에서 100%로 변경 */
@@ -4356,37 +4356,32 @@ input:checked + .toggleSwitchSlider:before {
     transition: none;
 }
 
-#content img[src*="duckarmri.png"] {
-    display: block;
-    margin: 0 auto;
-    max-width: 300px;
-    padding-top: 30px;
-    margin-bottom: 20px;
-    pointer-events: none;
-    user-select: none;
-    transition: transform 0.3s ease;
+
+#logo-container {
+    position: fixed;
+    left: 37%;
+    top: 30%;
+    transform: translate(-55%, -65%);
+    width: 40vw;
+    height: 40vh;
+    z-index: 1;
 }
 
-#content img[src*="duckarmri.png"]:hover {
-    transform: scale(1.05);
-}
 
 .logo-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    z-index: 10;
+    width: calc(100% - 5px);
+    height: auto;
+    margin-top: 350px;
+    margin-bottom: 350px; 
 }
 
 .logo-image {
-    max-width: 300px;
+    max-width: 1500px; 
     height: auto;
     transition: transform 0.3s ease;
 }
 
-.logo-image:hover {
-    transform: scale(1.05);
-}
 

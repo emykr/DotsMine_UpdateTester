@@ -13,6 +13,16 @@
         "imageAlign": "left",
         "imagePosition": "top"
     },
+
+    {
+
+        "title": "샘플",
+        "name": "DotsMine Sample Team",
+        "image": "assets/images/duckarmri.png",
+        "imageAlign": "left",
+        "imagePosition": "top"
+
+    },
     {
         "title": "UI/UX 디자인",
         "name": "DotsMine Design Team",

@@ -1,8 +1,8 @@
 directories:
   output: dist
   buildResources: build
-appId: SeaDriverGames.DotsMineLauncher
-productName: SeaDriverGames-Launcher
+appId: xyz.emykr.dotsmine.studio
+productName: DotsMine_Studio Launcher
 artifactName: ${productName}-setup-Stable-${version}.${ext}
 copyright: Copyright © 2025 SeaDriver Games. All Rights Reserved.
 asar: true
