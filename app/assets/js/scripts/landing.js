@@ -77,13 +77,9 @@ function setLaunchPercentage(percent){
     launch_progress.setAttribute('max', 100)
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
-    
-    const startButton = document.getElementById('start_button')
-    if(startButton) {
-        const progressFill = startButton.querySelector('.progress-fill')
-        if(progressFill) {
-            progressFill.style.width = percent + '%'
-        }
+    // 마스킹 효과
+    if(progressMask && playMaskContainer && playMaskContainer.style.display === 'block') {
+        progressMask.style.width = percent + '%'
     }
 }
 
@@ -130,6 +126,10 @@ function setStartButtonEnabled(enabled) {
     const startButton = document.getElementById('start_button')
     if(startButton) {
         startButton.disabled = !enabled
+        startButton.style.opacity = enabled ? '1' : '0.5'
+        startButton.style.cursor = enabled ? 'pointer' : 'not-allowed'
+        
+        if(!enabled) {
         startButton.style.opacity = enabled ? '1' : '0.5'
         startButton.style.cursor = enabled ? 'pointer' : 'not-allowed'
         
