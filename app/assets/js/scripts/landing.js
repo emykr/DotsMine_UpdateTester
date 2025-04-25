@@ -82,13 +82,7 @@ function setLaunchPercentage(percent){
     if(startButton) {
         const progressFill = startButton.querySelector('.progress-fill')
         if(progressFill) {
-            if(percent > 0 && percent < 100) {
-                startButton.classList.add('loading')
-                progressFill.style.width = percent + '%'
-            } else if(percent >= 100) {
-                // 100%에 도달했을 때는 상태를 바로 초기화하지 않음
-                progressFill.style.width = '100%'
-            }
+            progressFill.style.width = percent + '%'
         }
     }
 }
@@ -102,8 +96,13 @@ function setDownloadPercentage(percent){
     remote.getCurrentWindow().setProgressBar(percent/100)
     setLaunchPercentage(percent)
     
-    // 100%에 도달했을 때 바로 로딩 상태를 제거하지 않음
-    // 게임이 실제로 실행될 때까지 유지
+    const startButton = document.getElementById('start_button')
+    if(startButton) {
+        const progressFill = startButton.querySelector('.progress-fill')
+        if(progressFill) {
+            progressFill.style.width = percent + '%'
+        }
+    }
 }
 
 /**
@@ -183,6 +182,12 @@ if(start_button) {
             return
         }
         
+        // Add loading state UI
+        start_button.classList.add('loading')
+        const progressFill = document.createElement('div')
+        progressFill.className = 'progress-fill'
+        start_button.appendChild(progressFill)                       
+        
         startGame()
     })
 } else {
@@ -235,25 +240,21 @@ async function startGame() {
 
 // 게임이 실제로 시작되었는지 확인하는 함수
 function onGameLaunchComplete() {
-    isLaunching = false // 실행 상태 해제
-    toggleLaunchArea(false) // 로딩 UI 숨기기
-    setLaunchEnabled(true) // 시작 버튼 활성화
+    isLaunching = false
+    toggleLaunchArea(false)
+    setLaunchEnabled(true)
 
     const startButton = document.getElementById('start_button')
     if(startButton) {
         startButton.classList.remove('loading')
         startButton.classList.remove('error')
         startButton.disabled = false
-        // start_button.png가 반드시 보이도록 backgroundImage 강제 지정
-        startButton.style.background = "url('assets/images/duckarmri/start_button.png') no-repeat"
-        startButton.style.backgroundSize = 'contain'
         const progressFill = startButton.querySelector('.progress-fill')
         if(progressFill) {
             progressFill.style.width = '0%'
         }
     }
     
-    // OS progress bar 초기화
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
