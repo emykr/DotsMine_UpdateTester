@@ -130,10 +130,6 @@ function setStartButtonEnabled(enabled) {
         startButton.style.cursor = enabled ? 'pointer' : 'not-allowed'
         
         if(!enabled) {
-        startButton.style.opacity = enabled ? '1' : '0.5'
-        startButton.style.cursor = enabled ? 'pointer' : 'not-allowed'
-        
-        if(!enabled) {
             startButton.classList.remove('loading')
             const progressFill = startButton.querySelector('.progress-fill')
             if(progressFill) {
@@ -149,6 +145,8 @@ let isLaunching = false
 
 // Start button element
 const start_button = document.getElementById('start_button')
+const playMaskContainer = document.getElementById('playMaskContainer')
+const progressMask = document.getElementById('progress-mask')
 
 // Start button click handler - Add null check
 if(start_button) {
@@ -181,69 +179,46 @@ if(start_button) {
             toggleOverlay(true, true)
             return
         }
-        
-        // Add loading state UI
-        start_button.classList.add('loading')
-        const progressFill = document.createElement('div')
-        progressFill.className = 'progress-fill'
-        start_button.appendChild(progressFill)                       
-        
+        // 기존 버튼 숨기고 마스킹 UI 표시
+        start_button.style.display = 'none'
+        if(playMaskContainer) {
+            playMaskContainer.style.display = 'block'
+            if(progressMask) progressMask.style.width = '0%'
+        }
         startGame()
     })
 } else {
     console.error('Start button element not found in the DOM')
 }
 
-async function startGame() {
-    if(proc != null || isLaunching) {
-        return // 이미 실행 중이면 중복 실행 방지
+// 로딩 퍼센트에 따라 마스킹 채우기
+function setLaunchPercentage(percent){
+    launch_progress.setAttribute('max', 100)
+    launch_progress.setAttribute('value', percent)
+    launch_progress_label.innerHTML = percent + '%'
+    // 마스킹 효과
+    if(progressMask && playMaskContainer && playMaskContainer.style.display === 'block') {
+        progressMask.style.width = percent + '%'
     }
-
-    loggerLanding.info('Starting game..')
-    try {
-        isLaunching = true
-        setLaunchEnabled(false)
-        
-        const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
-        const jExe = ConfigManager.getJavaExecutable(ConfigManager.getSelectedServer())
-        
-        // 로딩 바 컨테이너 추가
-        if(!start_button.querySelector('.progress-fill')) {
-            const progressFill = document.createElement('div')
-            progressFill.className = 'progress-fill'
-            start_button.appendChild(progressFill)
+    // ...기존 코드...
+    const startButton = document.getElementById('start_button')
+    if(startButton) {
+        const progressFill = startButton.querySelector('.progress-fill')
+        if(progressFill) {
+            progressFill.style.width = percent + '%'
         }
-
-        if(jExe == null){
-            await asyncSystemScan(server.effectiveJavaOptions)
-        } else {
-            setLaunchDetails(Lang.queryJS('landing.launch.pleaseWait'))
-            toggleLaunchArea(true)
-            setLaunchPercentage(0)
-
-            const details = await validateSelectedJvm(ensureJavaDirIsRoot(jExe), server.effectiveJavaOptions.supported)
-            if(details != null){
-                loggerLanding.info('Jvm Details', details)
-                await dlAsync()
-            } else {
-                await asyncSystemScan(server.effectiveJavaOptions)
-            }
-        }
-    } catch(err) {
-        loggerLanding.error('Unhandled error during launch process.', err)
-        showLaunchFailure(
-            Lang.queryJS('landing.launch.failureTitle'), 
-            Lang.queryJS('landing.launch.failureText')
-        )
     }
 }
 
-// 게임이 실제로 시작되었는지 확인하는 함수
+// 로딩이 끝나면 다시 시작 버튼 UI로 복귀
 function onGameLaunchComplete() {
     isLaunching = false
     toggleLaunchArea(false)
     setLaunchEnabled(true)
-
+    // 마스킹 UI 숨기고 버튼 복귀
+    if(playMaskContainer) playMaskContainer.style.display = 'none'
+    if(start_button) start_button.style.display = 'block'
+    // ...기존 코드...
     const startButton = document.getElementById('start_button')
     if(startButton) {
         startButton.classList.remove('loading')
@@ -254,7 +229,6 @@ function onGameLaunchComplete() {
             progressFill.style.width = '0%'
         }
     }
-    
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
