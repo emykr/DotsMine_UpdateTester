@@ -4226,7 +4226,7 @@ flex-direction: column;
     height: 95px;
     object-fit: contain;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
     z-index: 100;   /* 다른 요소들 위에 표시 */
 }
 
@@ -4255,126 +4255,6 @@ flex-direction: column;
     height: 100%;   /* 컨테이너 높이에 맞춤 */
     max-width: 100%; /* 너비가 컨테이너를 넘지 않도록 제한 */
     object-fit: contain; /* 항상 비율 유지 */
-}
-
-/* Credits Container Styles */
-#creditsContainer {
-    height: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-#creditsContainer::-webkit-scrollbar {
-    width: 2px;
-}
-
-#creditsContainer::-webkit-scrollbar-track {
-    display: none;
-}
-
-#creditsContainer::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.50);
-}
-
-#creditsContent {
-    width: 100%;
-    margin: 0 auto;
-}
-
-.creditItem {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(126, 126, 126, 0.57);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: flex-start;
-}
-
-.creditImageContainer {
-    flex: 0 0 120px;
-    margin-right: 20px;
-}
-
-.creditImage {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-}
-
-.creditContentContainer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.creditItem h3 {
-    color: #ffffff;
-    margin: 0 0 10px 0;
-}
-
-.creditItem p {
-    color: #cccccc;
-    margin: 5px 0;
-}
-
-.creditItem ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
-}
-
-.creditItem li {
-    color: #cccccc;
-    margin: 5px 0;
-}
-
-#serverStatusContainer {
-    position: fixed;
-    top: calc(4.5vh + 10px);
-    right: calc(10vw);
-    z-index: 10;
-}
-
-.server-status {
-    width: calc(15.6vw);
-    height: auto;
-    object-fit: contain;
-    opacity: 1 !important;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    display: block;
-    transition: none;
-}
-
-
-#logo-container {
-    position: fixed;
-    left: 37%;
-    top: 30%;
-    transform: translate(-55%, -65%);
-    width: 40vw;
-    height: 40vh;
-    z-index: 1;
-}
-
-
-.logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: calc(100% - 5px);
-    height: auto;
-    margin-top: 350px;
-    margin-bottom: 350px; 
-}
-
-.logo-image {
-    max-width: 1500px; 
-    height: auto;
-    transition: transform 0.3s ease;
 }
 
 

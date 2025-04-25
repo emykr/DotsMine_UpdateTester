@@ -139,6 +139,20 @@ function setStartButtonEnabled(enabled) {
     }
 }
 
+
+
+function startGame() {
+    if(proc != null || isLaunching) return;
+    isLaunching = true;
+    // 마스킹 UI 표시
+    if(start_button) start_button.style.display = 'none';
+    if(playMaskContainer) {
+        playMaskContainer.style.display = 'block';
+        if(progressMask) progressMask.style.width = '0%';
+    }
+    dlAsync();
+}
+
 // Game execution status variables
 let proc = null 
 let isLaunching = false
