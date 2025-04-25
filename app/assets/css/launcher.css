@@ -2416,7 +2416,7 @@ input:checked + .toggleSwitchSlider:before {
 /* Update action button styles. */
 #settingsUpdateActionButton {
     display: flex;
-    flex-direction: column;
+flex-direction: column;
     padding-left: 10px;
     background: none;
     border: none;
@@ -3263,12 +3263,12 @@ input:checked + .toggleSwitchSlider:before {
 #mojangStatusTooltip:after {
     content: " ";
     position: absolute;
-    left: 50%;
-    top: 100%;
-    margin-left: -5px;
+    top: 50%;
+    right: 100%; /* To the left of the tooltip */
+    margin-top: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: rgba(0, 0, 0, 0.75) transparent transparent transparent;
+    border-color: transparent rgba(0, 0, 0, 0.75) transparent transparent;
 }
 #mojangStatusWrapper:hover #mojangStatusTooltip {
     visibility: visible;
@@ -3344,7 +3344,7 @@ input:checked + .toggleSwitchSlider:before {
 }
 #newsButton:active {
     color: #c7c7c7;
-    text-shadow: 0px 0px 20px #c7c7c7, 0px 0px 20px #c7c7c7;
+    text-shadow: 0px 0px 20px #c7c7c7;
 }
 
 #newsButton:hover #newsButtonSVG,
@@ -4149,8 +4149,8 @@ input:checked + .toggleSwitchSlider:before {
 }
 
 .start-button.loading {
-    background: url('../images/duckarmri/loading-bar.png') no-repeat;
-    background-size: 100% 100%;
+    background: url('../images/duckarmri/1.png') no-repeat !important;
+    background-size: contain !important;
 }
 
 .start-button.loading .progress-fill {
@@ -4159,12 +4159,9 @@ input:checked + .toggleSwitchSlider:before {
     top: 0;
     height: 100%;
     width: 0%;
-    background-color: #00b400;
-    mask: url('../images/duckarmri/loading-bar.png') no-repeat;
-    mask-size: 100% 100%;
-    -webkit-mask: url('../images/duckarmri/loading-bar.png') no-repeat;
-    -webkit-mask-size: 100% 100%;
-    transition: width 0.1s ease;
+    background: url('../images/duckarmri/2.png') no-repeat;
+    background-size: 100% 100%;
+    transition: width 0.2s ease;
 }
 
 .start-button:disabled {
@@ -4233,14 +4230,10 @@ input:checked + .toggleSwitchSlider:before {
     z-index: 100;   /* 다른 요소들 위에 표시 */
 }
 
+
 #start_button:hover {
     transform: scale(1.05);
     filter: brightness(1.2);
-}
-
-#start_button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 #Subbackground {
