@@ -144,46 +144,50 @@ function setStartButtonEnabled(enabled) {
     }
 }
 
-// 게임 실행 상태 확인 변수
+// Game execution status variables
 let proc = null 
 let isLaunching = false
 
 // Start button element
 const start_button = document.getElementById('start_button')
 
-// Start button click handler
-document.getElementById('start_button').addEventListener('click', async () => {
-    if(proc != null || isLaunching) {
-        setOverlayContent(
-            Lang.queryJS('landing.launch.alreadyRunningTitle'),
-            Lang.queryJS('landing.launch.alreadyRunningText'),
-            Lang.queryJS('landing.launch.alreadyRunningConfirm'),
-            Lang.queryJS('landing.launch.alreadyRunningCancel')
-        )
-        setOverlayHandler(() => {
-            toggleOverlay(false)
-            startGame()
-        })
-        setDismissHandler(() => {
-            toggleOverlay(false)
-        })
-        // overlay 중앙 정렬 스타일 적용
-        setTimeout(() => {
-            const overlay = document.getElementById('overlayContent')
-            if(overlay) {
-                overlay.style.top = '50%'
-                overlay.style.left = '50%'
-                overlay.style.transform = 'translate(-50%, -50%)'
-                overlay.style.position = 'fixed'
-                overlay.style.textAlign = 'center'
-            }
-        }, 10)
-        toggleOverlay(true, true)
-        return
-    }
-    
-    startGame()
-})
+// Start button click handler - Add null check
+if(start_button) {
+    start_button.addEventListener('click', async () => {
+        if(proc != null || isLaunching) {
+            setOverlayContent(
+                Lang.queryJS('landing.launch.alreadyRunningTitle'),
+                Lang.queryJS('landing.launch.alreadyRunningText'),
+                Lang.queryJS('landing.launch.alreadyRunningConfirm'),
+                Lang.queryJS('landing.launch.alreadyRunningCancel')
+            )
+            setOverlayHandler(() => {
+                toggleOverlay(false)
+                startGame()
+            })
+            setDismissHandler(() => {
+                toggleOverlay(false)
+            })
+            // overlay 중앙 정렬 스타일 적용
+            setTimeout(() => {
+                const overlay = document.getElementById('overlayContent')
+                if(overlay) {
+                    overlay.style.top = '50%'
+                    overlay.style.left = '50%'
+                    overlay.style.transform = 'translate(-50%, -50%)'
+                    overlay.style.position = 'fixed'
+                    overlay.style.textAlign = 'center'
+                }
+            }, 10)
+            toggleOverlay(true, true)
+            return
+        }
+        
+        startGame()
+    })
+} else {
+    console.error('Start button element not found in the DOM')
+}
 
 async function startGame() {
     if(proc != null || isLaunching) {
@@ -253,33 +257,51 @@ function onGameLaunchComplete() {
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
-// Bind settings button
-document.getElementById('settingsMediaButton').onclick = async e => {
-    await prepareSettings()
-    switchView(getCurrentView(), VIEWS.settings)
+// Bind settings button with null check
+const settingsMediaButton = document.getElementById('settingsMediaButton')
+if(settingsMediaButton) {
+    settingsMediaButton.onclick = async e => {
+        await prepareSettings()
+        switchView(getCurrentView(), VIEWS.settings)
+    }
 }
 
-// Bind avatar overlay button.
-document.getElementById('avatarOverlay').onclick = async e => {
-    await prepareSettings()
-    switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
-        settingsNavItemListener(document.getElementById('settingsNavAccount'), false)
-    })
+// Bind avatar overlay button with null check
+const avatarOverlayButton = document.getElementById('avatarOverlay')
+if(avatarOverlayButton) {
+    avatarOverlayButton.onclick = async e => {
+        await prepareSettings()
+        switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
+            settingsNavItemListener(document.getElementById('settingsNavAccount'), false)
+        })
+    }
 }
 
-// Bind selected account
+// 선택된 계정 정보 업데이트
 function updateSelectedAccount(authUser){
+    // 계정이 선택되지 않은 경우 기본 텍스트 표시
     let username = Lang.queryJS('landing.selectedAccount.noAccountSelected')
+    
+    // 계정 정보가 있는 경우
     if(authUser != null){
         if(authUser.displayName != null){
             username = authUser.displayName
         }
-        if(authUser.uuid != null){
-            document.getElementById('avatarContainer').style.backgroundImage = `url('https://mc-heads.net/body/${authUser.uuid}/right')`
+        // 아바타 이미지 업데이트 (컨테이너가 존재하는 경우에만)
+        const avatarContainer = document.getElementById('avatarContainer')
+        if(authUser.uuid != null && avatarContainer){
+            avatarContainer.style.backgroundImage = `url('https://mc-heads.net/body/${authUser.uuid}/right')`
         }
     }
-    user_text.innerHTML = username
+    
+    // 사용자 이름 텍스트 업데이트 (요소가 존재하는 경우에만)
+    const userTextElement = document.getElementById('user_text')
+    if(userTextElement) {
+        userTextElement.innerHTML = username
+    }
 }
+
+// 현재 선택된 계정으로 UI 업데이트
 updateSelectedAccount(ConfigManager.getSelectedAccount())
 
 // Bind selected server
@@ -700,8 +722,8 @@ async function dlAsync(login = true) {
                 proc.stdout.removeListener('data', tempListener)
                 proc.stderr.removeListener('data', gameErrorListener)
                 
-                // 로딩 상태 초기화
-                const startButton = document.querySelector('.start-button')
+                // 로딩 UI 초기화
+                const startButton = document.getElementById('start_button')
                 if(startButton) {
                     startButton.classList.remove('loading')
                     startButton.classList.remove('error')

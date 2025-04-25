@@ -234,6 +234,8 @@ function saveSettingsValues(){
 
 let selectedSettingsTab = 'settingsTabAccount'
 
+
+
 /**
  * Modify the settings container UI when the scroll threshold reaches
  * a certain poin.
@@ -268,7 +270,7 @@ function setupSettingsTabs(){
  * @param {Element} ele The nav item which has been clicked.
  * @param {boolean} fade Optional. True to fade transition.
  */
-function settingsNavItemListener(ele, fade = true){
+function settingsNavItemListener(ele, fade = true) {
     if(ele.hasAttribute('selected')){
         return
     }
@@ -290,49 +292,26 @@ function settingsNavItemListener(ele, fade = true){
             $(`#${selectedSettingsTab}`).fadeIn({
                 duration: 250,
                 start: () => {
-                    settingsTabScrollListener({
-                        target: document.getElementById(selectedSettingsTab)
-                    })
+                    const target = document.getElementById(selectedSettingsTab)
+                    target.style.display = 'block' // 명시적으로 display 설정
+                    settingsTabScrollListener({target})
                 }
             })
         })
     } else {
-        $(`#${prevTab}`).hide(0, () => {
-            $(`#${selectedSettingsTab}`).show({
-                duration: 0,
-                start: () => {
-                    settingsTabScrollListener({
-                        target: document.getElementById(selectedSettingsTab)
-                    })
-                }
-            })
-        })
+        $(`#${prevTab}`).hide()
+        const target = document.getElementById(selectedSettingsTab)
+        target.style.display = 'block'
+        settingsTabScrollListener({target})
     }
 }
 
-const settingsNavDone = document.getElementById('settingsNavDone')
-
-/**
- * Set if the settings save (done) button is disabled.
- * 
- * @param {boolean} v True to disable, false to enable.
- */
-function settingsSaveDisabled(v){
-    settingsNavDone.disabled = v
-}
-
-function fullSettingsSave() {
-    saveSettingsValues()
-    saveModConfiguration()
-    ConfigManager.save()
-    saveDropinModConfiguration()
-    saveShaderpackSettings()
-}
-
-/* Closes the settings view and saves all data. */
+// 설정 저장 버튼 이벤트
 settingsNavDone.onclick = () => {
     fullSettingsSave()
-    switchView(getCurrentView(), VIEWS.landing)
+    switchView(getCurrentView(), VIEWS.landing, 500, 500, () => {
+        document.getElementById('settingsContainer').style.display = 'none'
+    })
 }
 
 /**
@@ -985,7 +964,9 @@ async function reloadDropinMods(){
     bindModsToggleSwitch()
 }
 
-// Shaderpack
+/**
+ * Shaderpack
+ */
 
 let CACHE_SETTINGS_INSTANCE_DIR
 let CACHE_SHADERPACKS
