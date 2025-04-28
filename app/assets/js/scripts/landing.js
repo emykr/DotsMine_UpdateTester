@@ -88,15 +88,17 @@ function setLaunchPercentage(percent){
  * 
  * @param {number} percent Percentage (0-100)
  */
-function setDownloadPercentage(percent){
+function setDownloadPercentage(percent) {
     remote.getCurrentWindow().setProgressBar(percent/100)
     setLaunchPercentage(percent)
     
-    const startButton = document.getElementById('start_button')
-    if(startButton) {
-        const progressFill = startButton.querySelector('.progress-fill')
-        if(progressFill) {
-            progressFill.style.width = percent + '%'
+    // 로딩 마스크 컨테이너 너비 업데이트
+    const loadingMaskContainer = document.getElementById('loading-mask-container')
+    if (loadingMaskContainer) {
+        const frameOverlay = document.getElementById('frame-overlay')
+        if(frameOverlay) {
+            const maxWidth = frameOverlay.getBoundingClientRect().width
+            loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
         }
     }
 }
@@ -162,9 +164,66 @@ const start_button = document.getElementById('start_button')
 const playMaskContainer = document.getElementById('playMaskContainer')
 const progressMask = document.getElementById('progress-mask')
 
-// Start button click handler - Add null check
+// 시작 버튼 클릭 핸들러
 if(start_button) {
     start_button.addEventListener('click', async () => {
+        const buttonRect = start_button.getBoundingClientRect()
+        
+        // 프레임 오버레이 (1.png)
+        let frameOverlay = document.getElementById('frame-overlay')
+        if (!frameOverlay) {
+            frameOverlay = document.createElement('div')
+            frameOverlay.id = 'frame-overlay'
+            frameOverlay.style.position = 'absolute'
+            frameOverlay.style.zIndex = '1000'
+            frameOverlay.style.background = `url('./assets/images/duckarmri/1.png') no-repeat center center`
+            frameOverlay.style.backgroundSize = '100% 100%'
+            document.body.appendChild(frameOverlay)
+        }
+        
+        // 로딩 마스크 컨테이너 (클리핑용)
+        let loadingMaskContainer = document.getElementById('loading-mask-container')
+        if (!loadingMaskContainer) {
+            loadingMaskContainer = document.createElement('div')
+            loadingMaskContainer.id = 'loading-mask-container'
+            loadingMaskContainer.style.position = 'absolute'
+            loadingMaskContainer.style.zIndex = '1001'
+            loadingMaskContainer.style.overflow = 'hidden'
+            loadingMaskContainer.style.width = '0'
+            document.body.appendChild(loadingMaskContainer)
+        }
+        
+        // 로딩 마스크 (2.png)
+        let loadingMask = document.getElementById('loading-mask')
+        if (!loadingMask) {
+            loadingMask = document.createElement('div')
+            loadingMask.id = 'loading-mask'
+            loadingMask.style.position = 'absolute'
+            loadingMask.style.left = '0'
+            loadingMask.style.top = '0'
+            loadingMask.style.background = `url('./assets/images/duckarmri/2.png') no-repeat center center`
+            loadingMask.style.backgroundSize = '100% 100%'
+            loadingMaskContainer.appendChild(loadingMask)
+        }
+        
+        // 오버레이들 위치 설정
+        frameOverlay.style.top = buttonRect.top + 'px'
+        frameOverlay.style.left = buttonRect.left + 'px'
+        frameOverlay.style.width = buttonRect.width + 'px'
+        frameOverlay.style.height = buttonRect.height + 'px'
+        frameOverlay.style.display = 'block'
+        
+        loadingMaskContainer.style.top = buttonRect.top + 'px'
+        loadingMaskContainer.style.left = buttonRect.left + 'px'
+        loadingMaskContainer.style.height = buttonRect.height + 'px'
+        loadingMaskContainer.style.display = 'block'
+        
+        loadingMask.style.width = buttonRect.width + 'px'
+        loadingMask.style.height = buttonRect.height + 'px'
+        
+        // 원래 버튼 숨기기
+        start_button.style.opacity = '0'
+
         if(proc != null || isLaunching) {
             setOverlayContent(
                 Lang.queryJS('landing.launch.alreadyRunningTitle'),
@@ -175,6 +234,7 @@ if(start_button) {
             setOverlayHandler(() => {
                 toggleOverlay(false)
                 startGame()
+
             })
             setDismissHandler(() => {
                 toggleOverlay(false)
@@ -193,13 +253,15 @@ if(start_button) {
             toggleOverlay(true, true)
             return
         }
-        // 기존 버튼 숨기고 마스킹 UI 표시
+
+        // Hide original button and show loading UI
         start_button.style.display = 'none'
         if(playMaskContainer) {
             playMaskContainer.style.display = 'block'
             if(progressMask) progressMask.style.width = '0%'
         }
         startGame()
+
     })
 } else {
     console.error('Start button element not found in the DOM')
@@ -214,35 +276,39 @@ function setLaunchPercentage(percent){
     if(progressMask && playMaskContainer && playMaskContainer.style.display === 'block') {
         progressMask.style.width = percent + '%'
     }
-    // ...기존 코드...
-    const startButton = document.getElementById('start_button')
-    if(startButton) {
-        const progressFill = startButton.querySelector('.progress-fill')
-        if(progressFill) {
-            progressFill.style.width = percent + '%'
-        }
-    }
 }
 
-// 로딩이 끝나면 다시 시작 버튼 UI로 복귀
+/**
+ * 로딩이 끝나면 다시 시작 버튼 UI로 복귀
+ */
 function onGameLaunchComplete() {
     isLaunching = false
     toggleLaunchArea(false)
     setLaunchEnabled(true)
-    // 마스킹 UI 숨기고 버튼 복귀
-    if(playMaskContainer) playMaskContainer.style.display = 'none'
-    if(start_button) start_button.style.display = 'block'
-    // ...기존 코드...
-    const startButton = document.getElementById('start_button')
-    if(startButton) {
-        startButton.classList.remove('loading')
-        startButton.classList.remove('error')
-        startButton.disabled = false
-        const progressFill = startButton.querySelector('.progress-fill')
-        if(progressFill) {
-            progressFill.style.width = '0%'
-        }
+    
+    // 오버레이 완전히 제거
+    const frameOverlay = document.getElementById('frame-overlay')
+    const loadingMask = document.getElementById('loading-mask')
+    const playMaskContainer = document.getElementById('playMaskContainer')
+    
+    if(frameOverlay) {
+        frameOverlay.style.display = 'none'
+        frameOverlay.remove()
     }
+    if(loadingMask) {
+        loadingMask.style.display = 'none'
+        loadingMask.remove()
+    }
+    if(playMaskContainer) {
+        playMaskContainer.style.display = 'none';
+        const progressMask = document.getElementById('progress-mask');
+        if(progressMask) progressMask.style.width = '0';
+    }
+    if(start_button) {
+        start_button.style.display = 'block';
+        start_button.style.opacity = '1';
+    }
+    
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
@@ -250,8 +316,23 @@ function onGameLaunchComplete() {
 const settingsMediaButton = document.getElementById('settingsMediaButton')
 if(settingsMediaButton) {
     settingsMediaButton.onclick = async e => {
-        await prepareSettings()
-        switchView(getCurrentView(), VIEWS.settings)
+        const settingsContainer = document.getElementById('settingsContainer')
+        const landingContainer = document.getElementById('landingContainer')
+        if(settingsContainer) settingsContainer.style.display = 'block'
+        if(landingContainer) landingContainer.style.display = 'none'
+        if(typeof prepareSettings === 'function') await prepareSettings()
+    }
+}
+
+// 설정창 닫기(완료) 버튼 처리
+const settingsNavDone = document.getElementById('settingsNavDone')
+if(settingsNavDone) {
+    settingsNavDone.onclick = () => {
+        const settingsContainer = document.getElementById('settingsContainer')
+        const landingContainer = document.getElementById('landingContainer')
+        if(settingsContainer) settingsContainer.style.display = 'none'
+        if(landingContainer) landingContainer.style.display = 'block'
+        // 기존 완료 처리 로직이 있다면 여기에 추가   
     }
 }
 

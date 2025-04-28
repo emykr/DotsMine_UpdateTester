@@ -16,15 +16,18 @@
         <img src="assets/images/duckarmri/server_on.png" class="server-status" id="serverStatus">
     </div>
     <div id="playButtonContainer">
-        <img src="assets/images/duckarmri/start_button.png" class="start-button" id="start_button">
-        <div id="playMaskContainer">
-            <img src="assets/images/duckarmri/1.png" class="start-button" id="mask_base">
-            <div id="progress-mask">
-                <img src="assets/images/duckarmri/2.png" class="start-button" style="display:block;">
+        <div class="start-button-wrapper">
+            <img src="assets/images/duckarmri/start_button.png" class="start-button" id="start_button">
+            <div id="playMaskContainer" style="display:none;">
+                <img src="assets/images/duckarmri/1.png" class="loading-mask">
+                <div id="progress-mask" style="position: absolute; top: 0; left: 0; width: 0; height: 100%; overflow: hidden;">
+                    <img src="assets/images/duckarmri/2.png" class="loading-mask">
+                </div>
             </div>
         </div>
     </div>
     <div id="Subbackground">
+        
         <img src="assets/images/duckarmri/555.png" class="sublogo" id="sublogo">
     </div>
     <div id="logo-container">

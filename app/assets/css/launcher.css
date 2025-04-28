@@ -4134,34 +4134,47 @@ flex-direction: column;
     filter: brightness(1.2);
 }
 
-.start-button {
-    position: absolute;
-    bottom: -260px;
-    right: 90px;
+.start-button-wrapper {
+    position: relative;
     width: 450px;
     height: 100px;
-    object-fit: contain;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    background: url('../images/duckarmri/start_button.png') no-repeat;
-    background-size: contain;
 }
 
-.start-button.loading {
-    background: url('../images/duckarmri/1.png') no-repeat !important;
-    background-size: contain !important;
-}
 
-.start-button.loading .progress-fill {
+
+
+#playMaskContainer {
+    display: none;
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0%;
-    background: url('../images/duckarmri/2.png') no-repeat;
-    background-size: 100% 100%;
-    transition: width 0.2s ease;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 9; /* start-button보다 낮게 */
+    pointer-events: none;
+}
+
+.loading-mask {
+    position: absolute;
+    bottom: calc(2.8vh + 10px);
+    right: calc(1.5vw);
+    width: auto; /* 1280px 기준 400px -> 31vw */
+    height: 95px;
+    object-fit: contain;
+}
+
+#progress-mask {
+    width: 0;
+    transition: width 0.2s;
+}
+
+/* start_button이 가려질 때만 playMaskContainer 표시 */
+.start-button[style*="opacity: 0"] + #playMaskContainer {
+    display: block !important;
+}
+
+/* start_button이 보일 때는 playMaskContainer를 강제로 숨김 */
+.start-button[style*="opacity: 1"] ~ #playMaskContainer,
+.start-button[style*="display: block"] ~ #playMaskContainer {
+    display: none !important;
 }
 
 .start-button:disabled {
@@ -4173,6 +4186,13 @@ flex-direction: column;
 .start-button:hover {
     transform: scale(1.05);
     filter: brightness(1.2);
+    
+}
+
+
+
+.start-button {
+    z-index: 10;
 }
 
 .start-button.error {
@@ -4180,15 +4200,13 @@ flex-direction: column;
 }
 
 .server-status {
-    width: calc(15.6vw);
+    position: fixed;
+    top: calc(4.5vh + 10px);
+    right: calc(10vw);
+    width: calc(15.6vw); /* 1280px 기준 200px -> 15.6vw */
     height: auto;
     object-fit: contain;
-    opacity: 1 !important;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    display: block;
-    transition: none;
+    z-index: 10;
 }
 
 #mainImageContainer {
@@ -4256,5 +4274,29 @@ flex-direction: column;
     max-width: 100%; /* 너비가 컨테이너를 넘지 않도록 제한 */
     object-fit: contain; /* 항상 비율 유지 */
 }
+
+.sublogo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#logo-container {
+    position: fixed;
+    left: 30%;
+    top: 13%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
 
 

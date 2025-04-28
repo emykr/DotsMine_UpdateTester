@@ -254,12 +254,10 @@ function settingsTabScrollListener(e){
  * Bind functionality for the settings navigation items.
  */
 function setupSettingsTabs(){
-    Array.from(document.getElementsByClassName('settingsNavItem')).map((val) => {
-        if(val.hasAttribute('rSc')){
-            val.onclick = () => {
-                settingsNavItemListener(val)
-            }
-        }
+    Array.from(document.getElementsByClassName('settingsNavItem')).forEach(btn => {
+        btn.addEventListener('click', function() {
+            settingsNavItemListener(this)
+        })
     })
 }
 
@@ -284,25 +282,25 @@ function settingsNavItemListener(ele, fade = true) {
     let prevTab = selectedSettingsTab
     selectedSettingsTab = ele.getAttribute('rSc')
 
+    // 모든 탭 숨김, 선택한 탭만 표시
+    document.querySelectorAll('.settingsTab').forEach(tab => {
+        tab.style.display = 'none'
+    })
+    const target = document.getElementById(selectedSettingsTab)
+    if (target) target.style.display = 'block'
+
     document.getElementById(prevTab).onscroll = null
     document.getElementById(selectedSettingsTab).onscroll = settingsTabScrollListener
 
-    if(fade){
-        $(`#${prevTab}`).fadeOut(250, () => {
-            $(`#${selectedSettingsTab}`).fadeIn({
-                duration: 250,
-                start: () => {
-                    const target = document.getElementById(selectedSettingsTab)
-                    target.style.display = 'block' // 명시적으로 display 설정
-                    settingsTabScrollListener({target})
-                }
-            })
-        })
-    } else {
-        $(`#${prevTab}`).hide()
-        const target = document.getElementById(selectedSettingsTab)
-        target.style.display = 'block'
-        settingsTabScrollListener({target})
+    // 크레딧 탭 전환 처리
+    if(selectedSettingsTab === 'settingsTabCredits') {
+        loadCredits()
+    } else if(prevTab === 'settingsTabCredits') {
+        fadeOutCredits()
+        const creditsContainer = document.getElementById('creditsContainer')
+        if(creditsContainer) {
+            creditsContainer.scrollTop = 0
+        }
     }
 }
 
@@ -336,6 +334,7 @@ document.getElementById('settingsAddMicrosoftAccount').onclick = (e) => {
         ipcRenderer.send(MSFT_OPCODE.OPEN_LOGIN, VIEWS.settings, VIEWS.settings)
     })
 }
+
 
 // Bind reply for Microsoft Login.
 ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
