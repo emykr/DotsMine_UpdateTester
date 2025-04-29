@@ -131,7 +131,7 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
         width: 520,
         height: 600,
         frame: true,
-        icon: getPlatformIcon('seadriver')
+        icon: getPlatformIcon('dotsmine')
     })
 
     msftAuthWindow.on('closed', () => {
@@ -184,7 +184,7 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
         width: 520,
         height: 600,
         frame: true,
-        icon: getPlatformIcon('seadriver')
+        icon: getPlatformIcon('dotsmine')
     })
 
     msftLogoutWindow.on('closed', () => {
@@ -230,7 +230,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1280,
         height: 720,
-        icon: getPlatformIcon('DotsMine_Logo'),
+        icon: getPlatformIcon('dotsmine'),
         frame: false,
         webPreferences: {
             preload: path.join(__dirname, 'app', 'assets', 'js', 'preloader.js'),

@@ -1,7 +1,7 @@
 # Custom Language File for Launcher Customizer
 
 [ejs.app]
-title = "DotsMine Studio[DotsMine Close Beta]"
+title = "DotsMine Studio Launcher"
 
 [ejs.landing]
 mediaGitHubURL = "https://seadrivergames.com/"
