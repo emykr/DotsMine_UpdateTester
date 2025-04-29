@@ -227,14 +227,16 @@ if(start_button) {
         if(proc != null || isLaunching) {
             setOverlayContent(
                 Lang.queryJS('landing.launch.alreadyRunningTitle'),
-               '<br>' + Lang.queryJS('landing.launch.alreadyRunningText'),
+              '<br>' + Lang.queryJS('landing.launch.alreadyRunningText'),
                 Lang.queryJS('landing.launch.alreadyRunningConfirm'),
                 Lang.queryJS('landing.launch.alreadyRunningCancel')
             )
             setOverlayHandler(() => {
                 toggleOverlay(false)
+                // 강제로 새로 시작
+                isLaunching = false
+                proc = null
                 startGame()
-
             })
             setDismissHandler(() => {
                 toggleOverlay(false)
@@ -285,12 +287,10 @@ function onGameLaunchComplete() {
     isLaunching = false
     toggleLaunchArea(false)
     setLaunchEnabled(true)
-    
     // 오버레이 완전히 제거
     const frameOverlay = document.getElementById('frame-overlay')
     const loadingMask = document.getElementById('loading-mask')
     const playMaskContainer = document.getElementById('playMaskContainer')
-    
     if(frameOverlay) {
         frameOverlay.style.display = 'none'
         frameOverlay.remove()
@@ -307,8 +307,8 @@ function onGameLaunchComplete() {
     if(start_button) {
         start_button.style.display = 'block';
         start_button.style.opacity = '1';
+        start_button.disabled = false; // 항상 활성화
     }
-    
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
@@ -644,6 +644,8 @@ async function dlAsync(login = true) {
     const loggerLaunchSuite = LoggerUtil.getLogger('LaunchSuite')
 
     setLaunchDetails(Lang.queryJS('landing.dlAsync.loadingServerInfo'))
+    toggleLaunchArea(true)
+    setLaunchPercentage(0, 100)
 
     let distro
 
