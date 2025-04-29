@@ -227,7 +227,7 @@ if(start_button) {
         if(proc != null || isLaunching) {
             setOverlayContent(
                 Lang.queryJS('landing.launch.alreadyRunningTitle'),
-                Lang.queryJS('landing.launch.alreadyRunningText'),
+               '<br>' + Lang.queryJS('landing.launch.alreadyRunningText'),
                 Lang.queryJS('landing.launch.alreadyRunningConfirm'),
                 Lang.queryJS('landing.launch.alreadyRunningCancel')
             )
