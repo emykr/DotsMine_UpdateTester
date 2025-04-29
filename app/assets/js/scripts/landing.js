@@ -314,6 +314,10 @@ if(start_button) {
                 if(progressMask) progressMask.style.width = '0%'
                 // playMaskContainer 숨기기
                 if(playMaskContainer) playMaskContainer.style.display = 'none'
+        
+                // ESC 키 이벤트 강제 발생
+                const escEvent = new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, which: 27 })
+                document.dispatchEvent(escEvent)
             })
         
             toggleOverlay(true, true)
