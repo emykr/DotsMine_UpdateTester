@@ -274,6 +274,7 @@ if(start_button) {
         // 원래 버튼 숨기기
         start_button.style.opacity = '0'
 
+        // 중복 실행 상태 체크
         if(proc != null || isLaunching) {
             setOverlayContent(
                 Lang.queryJS('landing.launch.alreadyRunningTitle'),
@@ -282,7 +283,7 @@ if(start_button) {
                 Lang.queryJS('landing.launch.alreadyRunningCancel')
             )
             document.getElementById('overlayContainer').style.pointerEvents = 'all'
-        
+
             setOverlayHandler(() => {
                 toggleOverlay(false)
                 if(proc && typeof proc.kill === 'function') {
@@ -292,7 +293,7 @@ if(start_button) {
                 isLaunching = false
                 startGame()
             })
-        
+
             setDismissHandler(() => {
                 toggleOverlay(false)
                 // 1.png 마스킹(프레임) 숨기기
@@ -314,12 +315,12 @@ if(start_button) {
                 if(progressMask) progressMask.style.width = '0%'
                 // playMaskContainer 숨기기
                 if(playMaskContainer) playMaskContainer.style.display = 'none'
-            
                 // ESC 키 이벤트 강제 발생 (중복 실행 상태에서만)
                 const escEvent = new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, which: 27 })
                 document.dispatchEvent(escEvent)
             })
-        
+
+            // 반드시 dismissable true로!
             toggleOverlay(true, true)
             return
         }
@@ -331,26 +332,12 @@ if(start_button) {
             if(progressMask) progressMask.style.width = '0%'
         }
         startGame()
-
     })
 } else {
     console.error('Start button element not found in the DOM')
 }
 
-// 로딩 퍼센트에 따라 마스킹 채우기
-function setLaunchPercentage(percent){
-    launch_progress.setAttribute('max', 100)
-    launch_progress.setAttribute('value', percent)
-    launch_progress_label.innerHTML = percent + '%'
-    // 마스킹 효과
-    if(progressMask && playMaskContainer && playMaskContainer.style.display === 'block') {
-        progressMask.style.width = percent + '%'
-    }
-}
-
-/**
- * 로딩이 끝나면 다시 시작 버튼 UI로 복귀
- */
+// 게임 프로세스 종료 시 상태 복구
 function onGameLaunchComplete() {
     isLaunching = false
     toggleLaunchArea(false)
@@ -378,6 +365,16 @@ function onGameLaunchComplete() {
         start_button.disabled = false; // 항상 활성화
     }
     remote.getCurrentWindow().setProgressBar(-1)
+}
+
+// dlAsync 내부(게임 프로세스 종료 이벤트)에서도 반드시 아래처럼!
+if(proc && proc.on) {
+    proc.on('close', (code, signal) => {
+        loggerLaunchSuite.info('Game process terminated')
+        proc = null
+        isLaunching = false
+        onGameLaunchComplete()
+    })
 }
 
 
