@@ -155,9 +155,13 @@ function startGame() {
     dlAsync();
 }
 
+const MIN_LINGER = 5000
+const minDuration = 1000
+
 // Game execution status variables
 let proc = null 
 let isLaunching = false
+
 
 // Start button element
 const start_button = document.getElementById('start_button')
@@ -634,7 +638,7 @@ let hasRPC = false
 // Change this if your server uses something different.
 const GAME_JOINED_REGEX = /\[.+\]: Sound engine started/
 const GAME_LAUNCH_REGEX = /^\[.+\]: (?:MinecraftForge .+ Initialized|ModLauncher .+ starting: .+|Loading Minecraft .+ with Fabric Loader .+)$/
-const MIN_LINGER = 5000
+
 
 async function dlAsync(login = true) {
 
