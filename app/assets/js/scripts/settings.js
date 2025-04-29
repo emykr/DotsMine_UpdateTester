@@ -1371,11 +1371,27 @@ function bindMinMaxRam(server) {
  */
 async function prepareJavaTab(){
     const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
+
+    // 자바 검색 추가
+    if(!ConfigManager.getJavaExecutable(server.rawServer.id)) {
+        const jvmDetails = await discoverBestJvmInstallation(
+            ConfigManager.getDataDirectory(),
+            server.effectiveJavaOptions.supported  
+        )
+        if(jvmDetails != null) {
+            const javaExec = javaExecFromRoot(jvmDetails.path)
+            ConfigManager.setJavaExecutable(server.rawServer.id, javaExec)
+            ConfigManager.save()
+            settingsJavaExecVal.value = javaExec 
+        }
+    }
+
     bindMinMaxRam(server)
     bindRangeSlider(server)
     populateMemoryStatus()
     populateJavaReqDesc(server)
     populateJvmOptsLink(server)
+    await populateJavaExecDetails(settingsJavaExecVal.value)
 }
 
 /**

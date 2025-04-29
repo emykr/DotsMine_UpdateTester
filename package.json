@@ -1,9 +1,9 @@
 {
   "name": "dosmine-studio-launcher",
-  "version": "1.0.9",
+  "version": "1.0.11",
   "productName": "DotsMine_Studio Launcher",
   "description":"DotsMine Studio", 
-  "author": "Daniel Scalzi (https://github.com/dscalzi/)",
+  "author": "Emykr",
   "license": "UNLICENSED",
   "homepage": "https://github.com/dscalzi/HeliosLauncher",
   "bugs": {

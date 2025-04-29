@@ -4,7 +4,7 @@ directories:
 appId: xyz.emykr.dotsmine.studio
 productName: DotsMine_Studio Launcher
 artifactName: ${productName}-setup-Stable-${version}.${ext}
-copyright: Copyright © 2025 SeaDriver Games. All Rights Reserved.
+copyright: Copyright © 2025 DotsMine Studio. All Rights Reserved.
 asar: true
 compression: maximum
 files:

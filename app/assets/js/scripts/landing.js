@@ -143,16 +143,62 @@ function setStartButtonEnabled(enabled) {
 
 
 
-function startGame() {
-    if(proc != null || isLaunching) return;
-    isLaunching = true;
-    // 마스킹 UI 표시
-    if(start_button) start_button.style.display = 'none';
-    if(playMaskContainer) {
-        playMaskContainer.style.display = 'none';
-        if(progressMask) progressMask.style.width = '0%';
+async function startGame() {
+    // 실행 중이거나 시작 중이면 리턴
+    if(proc != null || isLaunching) {
+        return
     }
-    dlAsync();
+
+    // 자바 실행 파일 체크
+    const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
+    const javaExec = ConfigManager.getJavaExecutable(server.rawServer.id)
+
+    if(!javaExec) {
+        // 자바 자동 검색
+        const jvmDetails = await discoverBestJvmInstallation(
+            ConfigManager.getDataDirectory(),
+            server.effectiveJavaOptions.supported
+        )
+
+        if(jvmDetails != null) {
+            // 자바 찾음 - 설정 저장
+            const foundJavaExec = javaExecFromRoot(jvmDetails.path)
+            ConfigManager.setJavaExecutable(server.rawServer.id, foundJavaExec)
+            ConfigManager.save()
+            
+            // 게임 시작 진행
+            proceedWithLaunch()
+        } else {
+            // 자바 못찾음 - 설정으로 이동
+            setOverlayContent(
+                '자바를 찾을 수 없습니다',
+                '게임 실행을 위해 자바를 설정해야 합니다.<br>설정 화면으로 이동합니다.',
+                '확인'
+            )
+            setOverlayHandler(() => {
+                toggleOverlay(false)
+                switchView(getCurrentView(), VIEWS.settings)
+                settingsNavItemListener(document.getElementById('settingsNavJava'))
+            })
+            toggleOverlay(true)
+            return
+        }
+    } else {
+        // 자바 있음 - 게임 시작
+        proceedWithLaunch()
+    }
+}
+
+// 실제 게임 실행 로직을 proceedWithLaunch 함수로 분리
+function proceedWithLaunch() {
+    isLaunching = true
+    // 마스킹 UI 표시
+    if(start_button) start_button.style.display = 'none'
+    if(playMaskContainer) {
+        playMaskContainer.style.display = 'block'
+        if(progressMask) progressMask.style.width = '0%'
+    }
+    dlAsync()
 }
 
 const MIN_LINGER = 5000
@@ -172,50 +218,6 @@ const progressMask = document.getElementById('progress-mask')
 if(start_button) {
     start_button.addEventListener('click', async () => {
         const buttonRect = start_button.getBoundingClientRect()
-        
-        // 프레임 오버레이 (1.png)
-        let frameOverlay = document.getElementById('frame-overlay')
-        if (!frameOverlay) {
-            frameOverlay = document.createElement('div')
-            frameOverlay.id = 'frame-overlay'
-            frameOverlay.style.position = 'absolute'
-            frameOverlay.style.zIndex = '1000'
-            frameOverlay.style.background = `url('./assets/images/duckarmri/1.png') no-repeat center center`
-            frameOverlay.style.backgroundSize = '100% 100%'
-            document.body.appendChild(frameOverlay)
-        }
-        
-        // 로딩 마스크 컨테이너 (클리핑용)
-        let loadingMaskContainer = document.getElementById('loading-mask-container')
-        if (!loadingMaskContainer) {
-            loadingMaskContainer = document.createElement('div')
-            loadingMaskContainer.id = 'loading-mask-container'
-            loadingMaskContainer.style.position = 'absolute'
-            loadingMaskContainer.style.zIndex = '1001'
-            loadingMaskContainer.style.overflow = 'hidden'
-            loadingMaskContainer.style.width = '0'
-            document.body.appendChild(loadingMaskContainer)
-        }
-        
-        // 로딩 마스크 (2.png)
-        let loadingMask = document.getElementById('loading-mask')
-        if (!loadingMask) {
-            loadingMask = document.createElement('div')
-            loadingMask.id = 'loading-mask'
-            loadingMask.style.position = 'absolute'
-            loadingMask.style.left = '0'
-            loadingMask.style.top = '0'
-            loadingMask.style.background = `url('./assets/images/duckarmri/2.png') no-repeat center center`
-            loadingMask.style.backgroundSize = '100% 100%'
-            loadingMaskContainer.appendChild(loadingMask)
-        }
-        
-        // 오버레이들 위치 설정
-        frameOverlay.style.top = buttonRect.top + 'px'
-        frameOverlay.style.left = buttonRect.left + 'px'
-        frameOverlay.style.width = buttonRect.width + 'px'
-        frameOverlay.style.height = buttonRect.height + 'px'
-        frameOverlay.style.display = 'block'
         
         loadingMaskContainer.style.top = buttonRect.top + 'px'
         loadingMaskContainer.style.left = buttonRect.left + 'px'
@@ -654,6 +656,7 @@ const GAME_LAUNCH_REGEX = /^\[.+\]: (?:MinecraftForge .+ Initialized|ModLauncher
 
 async function dlAsync(login = true) {
 
+    
     // Login parameter is temporary for debug purposes. Allows testing the validation/downloads without
     // launching the game.
 
