@@ -234,6 +234,8 @@ function saveSettingsValues(){
 
 let selectedSettingsTab = 'settingsTabAccount'
 
+
+
 /**
  * Modify the settings container UI when the scroll threshold reaches
  * a certain poin.
@@ -252,12 +254,10 @@ function settingsTabScrollListener(e){
  * Bind functionality for the settings navigation items.
  */
 function setupSettingsTabs(){
-    Array.from(document.getElementsByClassName('settingsNavItem')).map((val) => {
-        if(val.hasAttribute('rSc')){
-            val.onclick = () => {
-                settingsNavItemListener(val)
-            }
-        }
+    Array.from(document.getElementsByClassName('settingsNavItem')).forEach(btn => {
+        btn.addEventListener('click', function() {
+            settingsNavItemListener(this)
+        })
     })
 }
 
@@ -268,7 +268,7 @@ function setupSettingsTabs(){
  * @param {Element} ele The nav item which has been clicked.
  * @param {boolean} fade Optional. True to fade transition.
  */
-function settingsNavItemListener(ele, fade = true){
+function settingsNavItemListener(ele, fade = true) {
     if(ele.hasAttribute('selected')){
         return
     }
@@ -282,58 +282,34 @@ function settingsNavItemListener(ele, fade = true){
     let prevTab = selectedSettingsTab
     selectedSettingsTab = ele.getAttribute('rSc')
 
+    // 모든 탭 숨김, 선택한 탭만 표시
+    document.querySelectorAll('.settingsTab').forEach(tab => {
+        tab.style.display = 'none'
+    })
+    const target = document.getElementById(selectedSettingsTab)
+    if (target) target.style.display = 'block'
+
     document.getElementById(prevTab).onscroll = null
     document.getElementById(selectedSettingsTab).onscroll = settingsTabScrollListener
 
-    if(fade){
-        $(`#${prevTab}`).fadeOut(250, () => {
-            $(`#${selectedSettingsTab}`).fadeIn({
-                duration: 250,
-                start: () => {
-                    settingsTabScrollListener({
-                        target: document.getElementById(selectedSettingsTab)
-                    })
-                }
-            })
-        })
-    } else {
-        $(`#${prevTab}`).hide(0, () => {
-            $(`#${selectedSettingsTab}`).show({
-                duration: 0,
-                start: () => {
-                    settingsTabScrollListener({
-                        target: document.getElementById(selectedSettingsTab)
-                    })
-                }
-            })
-        })
+    // 크레딧 탭 전환 처리
+    if(selectedSettingsTab === 'settingsTabCredits') {
+        loadCredits()
+    } else if(prevTab === 'settingsTabCredits') {
+        fadeOutCredits()
+        const creditsContainer = document.getElementById('creditsContainer')
+        if(creditsContainer) {
+            creditsContainer.scrollTop = 0
+        }
     }
-
 }
 
-const settingsNavDone = document.getElementById('settingsNavDone')
-
-/**
- * Set if the settings save (done) button is disabled.
- * 
- * @param {boolean} v True to disable, false to enable.
- */
-function settingsSaveDisabled(v){
-    settingsNavDone.disabled = v
-}
-
-function fullSettingsSave() {
-    saveSettingsValues()
-    saveModConfiguration()
-    ConfigManager.save()
-    saveDropinModConfiguration()
-    saveShaderpackSettings()
-}
-
-/* Closes the settings view and saves all data. */
+// 설정 저장 버튼 이벤트
 settingsNavDone.onclick = () => {
     fullSettingsSave()
-    switchView(getCurrentView(), VIEWS.landing)
+    switchView(getCurrentView(), VIEWS.landing, 500, 500, () => {
+        document.getElementById('settingsContainer').style.display = 'none'
+    })
 }
 
 /**
@@ -358,6 +334,7 @@ document.getElementById('settingsAddMicrosoftAccount').onclick = (e) => {
         ipcRenderer.send(MSFT_OPCODE.OPEN_LOGIN, VIEWS.settings, VIEWS.settings)
     })
 }
+
 
 // Bind reply for Microsoft Login.
 ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
@@ -986,7 +963,9 @@ async function reloadDropinMods(){
     bindModsToggleSwitch()
 }
 
-// Shaderpack
+/**
+ * Shaderpack
+ */
 
 let CACHE_SETTINGS_INSTANCE_DIR
 let CACHE_SHADERPACKS
@@ -1454,7 +1433,7 @@ function populateAboutVersionInformation(){
  */
 function populateReleaseNotes(){
     $.ajax({
-        url: '',
+        url: 'https://github.com/dscalzi/HeliosLauncher/releases.atom',
         success: (data) => {
             const version = 'v' + remote.app.getVersion()
             const entries = $(data).find('entry')
@@ -1661,6 +1640,7 @@ async function prepareCreditsTab() {
     await loadCredits()
 }
 
+// Settings navigation item event handling
 const navItems = document.getElementsByClassName('settingsNavItem')
 let lastSelectedTab = null
 
@@ -1681,7 +1661,6 @@ for (let nav of navItems) {
         lastSelectedTab = currentTab
     })
 }
-
 
 /**
  * Settings preparation functions.
@@ -1708,4 +1687,4 @@ async function prepareSettings(first = false) {
 }
 
 // Prepare the settings UI on startup.
-//prepareSettings(true)
+prepareSettings(true)

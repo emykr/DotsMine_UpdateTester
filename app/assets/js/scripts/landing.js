@@ -643,7 +643,7 @@ async function dlAsync(login = true) {
 
     const loggerLaunchSuite = LoggerUtil.getLogger('LaunchSuite')
 
-    setLaunchDetails(Lang.queryJS('landing.dlAsync.loadingServerInfo'))
+    setLaunchDetails(Lang.queryJS('landing.dlAsync.loadingServerInfo')) 
     toggleLaunchArea(true)
     setLaunchPercentage(0, 100)
 
@@ -670,6 +670,8 @@ async function dlAsync(login = true) {
     setLaunchDetails(Lang.queryJS('landing.dlAsync.pleaseWait'))
     toggleLaunchArea(true)
     setLaunchPercentage(0, 100)
+
+    const startTime = Date.now()
 
     const fullRepairModule = new FullRepair(
         ConfigManager.getCommonDirectory(),
@@ -699,23 +701,40 @@ async function dlAsync(login = true) {
         invalidFileCount = await fullRepairModule.verifyFiles(percent => {
             setLaunchPercentage(percent)
         })
-        setLaunchPercentage(100)
+        // 검증이 너무 빨리 끝나면 자연스러운 애니메이션 추가
+        const elapsed = Date.now() - startTime
+        const minDuration = 1000 // 최소 1초
+        if (elapsed < minDuration) {
+            const step = 5
+            for (let p = 0; p <= 100; p += step) {
+                setLaunchPercentage(p)
+                await new Promise(res => setTimeout(res, (minDuration - elapsed) / (100 / step)))
+            }
+        }
     } catch (err) {
         loggerLaunchSuite.error('Error during file validation.')
         showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileVerificationTitle'), err.displayable || Lang.queryJS('landing.dlAsync.seeConsoleForDetails'))
         return
     }
-    
 
     if(invalidFileCount > 0) {
         loggerLaunchSuite.info('Downloading files.')
         setLaunchDetails(Lang.queryJS('landing.dlAsync.downloadingFiles'))
         setLaunchPercentage(0)
         try {
+            const dlStartTime = Date.now()
             await fullRepairModule.download(percent => {
                 setDownloadPercentage(percent)
             })
-            setDownloadPercentage(100)
+            // 다운로드가 너무 빨리 끝나면 자연스러운 애니메이션 추가
+            const dlElapsed = Date.now() - dlStartTime
+            if (dlElapsed < minDuration) {
+                const step = 5
+                for (let p = 0; p <= 100; p += step) {
+                    setDownloadPercentage(p)
+                    await new Promise(res => setTimeout(res, (minDuration - dlElapsed) / (100 / step)))
+                }
+            }
         } catch(err) {
             loggerLaunchSuite.error('Error during file download.')
             showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileDownloadTitle'), err.displayable || Lang.queryJS('landing.dlAsync.seeConsoleForDetails'))
@@ -723,6 +742,15 @@ async function dlAsync(login = true) {
         }
     } else {
         loggerLaunchSuite.info('No invalid files, skipping download.')
+        // 다운로드를 건너뛰어도 자연스러운 로딩 애니메이션 추가
+        const elapsed = Date.now() - startTime
+        if (elapsed < minDuration) {
+            const step = 5
+            for (let p = 0; p <= 100; p += step) {
+                setDownloadPercentage(p)
+                await new Promise(res => setTimeout(res, (minDuration - elapsed) / (100 / step)))
+            }
+        }
     }
 
     // Remove download bar.
