@@ -3609,10 +3609,10 @@ flex-direction: column;
 /* Div which contains action buttons. */
 #overlayActionContainer {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
     justify-content: center;
+    margin-top: 20px;
 }
-
 /* Overlay acknowledge button styles. */
 #overlayAcknowledge {
     background: none;
@@ -4067,23 +4067,6 @@ flex-direction: column;
     margin: 5px 0;
 }
 
-.playButtonContainer {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-}
-
-.playButtonContainer img {
-    width: 400px;
-    height: 400px;
-    object-fit: contain;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
 .button-right-container {
     position: fixed;
@@ -4136,33 +4119,35 @@ flex-direction: column;
 
 .start-button-wrapper {
     position: relative;
-    width: 450px;
-    height: 100px;
+    width: auto;
+    height: 95px;
 }
-
 
 
 
 #playMaskContainer {
+    position: fixed; 
+    bottom: calc(2.8vh + 10px);
+    right: calc(1.5vw);
+    width: auto;
+    height: 95px;
     display: none;
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 9; /* start-button보다 낮게 */
-    pointer-events: none;
+    z-index: 9;
 }
 
 .loading-mask {
-    position: absolute;
-    bottom: calc(2.8vh + 10px);
-    right: calc(1.5vw);
-    width: auto; /* 1280px 기준 400px -> 31vw */
-    height: 95px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
 
 #progress-mask {
-    width: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    overflow: hidden;
     transition: width 0.2s;
 }
 
@@ -4296,7 +4281,35 @@ flex-direction: column;
     justify-content: center;
     align-items: center;
 }
+/* 오버레이 버튼 컨테이너 */
+.overlayButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
 
+/* 오버레이 버튼 스타일 */
+.overlayButton {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* 취소 버튼 스타일 */
+.overlayDismiss {
+    background: #6b6b6b;
+    color: white;
+}
+
+/* 확인 버튼 스타일 */
+.overlayConfirm {
+    background: #2C70B9;
+    color: white;
+}
 
 
 

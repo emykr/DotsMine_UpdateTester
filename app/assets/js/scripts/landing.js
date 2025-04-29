@@ -219,6 +219,50 @@ if(start_button) {
     start_button.addEventListener('click', async () => {
         const buttonRect = start_button.getBoundingClientRect()
         
+        // 프레임 오버레이 (1.png)
+        let frameOverlay = document.getElementById('frame-overlay')
+        if (!frameOverlay) {
+            frameOverlay = document.createElement('div')
+            frameOverlay.id = 'frame-overlay'
+            frameOverlay.style.position = 'absolute'
+            frameOverlay.style.zIndex = '1000'
+            frameOverlay.style.background = `url('./assets/images/duckarmri/1.png') no-repeat center center`
+            frameOverlay.style.backgroundSize = '100% 100%'
+            document.body.appendChild(frameOverlay)
+        }
+        
+        // 로딩 마스크 컨테이너 (클리핑용)
+        let loadingMaskContainer = document.getElementById('loading-mask-container')
+        if (!loadingMaskContainer) {
+            loadingMaskContainer = document.createElement('div')
+            loadingMaskContainer.id = 'loading-mask-container'
+            loadingMaskContainer.style.position = 'absolute'
+            loadingMaskContainer.style.zIndex = '1001'
+            loadingMaskContainer.style.overflow = 'hidden'
+            loadingMaskContainer.style.width = '0'
+            document.body.appendChild(loadingMaskContainer)
+        }
+        
+        // 로딩 마스크 (2.png)
+        let loadingMask = document.getElementById('loading-mask')
+        if (!loadingMask) {
+            loadingMask = document.createElement('div')
+            loadingMask.id = 'loading-mask'
+            loadingMask.style.position = 'absolute'
+            loadingMask.style.left = '0'
+            loadingMask.style.top = '0'
+            loadingMask.style.background = `url('./assets/images/duckarmri/2.png') no-repeat center center`
+            loadingMask.style.backgroundSize = '100% 100%'
+            loadingMaskContainer.appendChild(loadingMask)
+        }
+        
+        // 오버레이들 위치 설정
+        frameOverlay.style.top = buttonRect.top + 'px'
+        frameOverlay.style.left = buttonRect.left + 'px'
+        frameOverlay.style.width = buttonRect.width + 'px'
+        frameOverlay.style.height = buttonRect.height + 'px'
+        frameOverlay.style.display = 'block'
+        
         loadingMaskContainer.style.top = buttonRect.top + 'px'
         loadingMaskContainer.style.left = buttonRect.left + 'px'
         loadingMaskContainer.style.height = buttonRect.height + 'px'
@@ -233,31 +277,45 @@ if(start_button) {
         if(proc != null || isLaunching) {
             setOverlayContent(
                 Lang.queryJS('landing.launch.alreadyRunningTitle'),
-              '<br>' + Lang.queryJS('landing.launch.alreadyRunningText'),
+                '<br>' + Lang.queryJS('landing.launch.alreadyRunningText'),
                 Lang.queryJS('landing.launch.alreadyRunningConfirm'),
                 Lang.queryJS('landing.launch.alreadyRunningCancel')
             )
+            document.getElementById('overlayContainer').style.pointerEvents = 'all'
+        
             setOverlayHandler(() => {
                 toggleOverlay(false)
-                // 강제로 새로 시작
-                isLaunching = false
+                if(proc && typeof proc.kill === 'function') {
+                    try { proc.kill() } catch(e) {}
+                }
                 proc = null
+                isLaunching = false
                 startGame()
             })
+        
             setDismissHandler(() => {
                 toggleOverlay(false)
-            })
-            // overlay 중앙 정렬 스타일 적용
-            setTimeout(() => {
-                const overlay = document.getElementById('overlayContent')
-                if(overlay) {
-                    overlay.style.top = '50%'
-                    overlay.style.left = '50%'
-                    overlay.style.transform = 'translate(-50%, -50%)'
-                    overlay.style.position = 'fixed'
-                    overlay.style.textAlign = 'center'
+                // 1.png 마스킹(프레임) 숨기기
+                const frameOverlay = document.getElementById('frame-overlay')
+                if(frameOverlay) frameOverlay.style.display = 'none'
+                // 2.png 마스킹(로딩) 숨기기
+                const loadingMask = document.getElementById('loading-mask')
+                if(loadingMask) loadingMask.style.display = 'none'
+                // 마스킹 컨테이너 숨기기
+                const loadingMaskContainer = document.getElementById('loading-mask-container')
+                if(loadingMaskContainer) loadingMaskContainer.style.display = 'none'
+                // 시작 버튼 보이기
+                if(start_button) {
+                    start_button.style.display = 'block'
+                    start_button.style.opacity = '1'
+                    start_button.disabled = false
                 }
-            }, 10)
+                // 프로그레스바 마스크 초기화
+                if(progressMask) progressMask.style.width = '0%'
+                // playMaskContainer 숨기기
+                if(playMaskContainer) playMaskContainer.style.display = 'none'
+            })
+        
             toggleOverlay(true, true)
             return
         }

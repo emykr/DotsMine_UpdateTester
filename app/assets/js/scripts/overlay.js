@@ -130,11 +130,15 @@ async function toggleServerSelection(toggleState){
  * @param {string} acknowledge Acknowledge button text.
  * @param {string} dismiss Dismiss button text.
  */
-function setOverlayContent(title, description, acknowledge, dismiss = Lang.queryJS('overlay.dismiss')){
-    document.getElementById('overlayTitle').innerHTML = title
-    document.getElementById('overlayDesc').innerHTML = description
-    document.getElementById('overlayAcknowledge').innerHTML = acknowledge
-    document.getElementById('overlayDismiss').innerHTML = dismiss
+function setOverlayContent(title, desc, acknowledgeText, dismissText) {
+    document.getElementById('overlayTitle').innerHTML = title || ''
+    document.getElementById('overlayDesc').innerHTML = desc || ''
+    const ackBtn = document.getElementById('overlayAcknowledge')
+    const disBtn = document.getElementById('overlayDismiss')
+    ackBtn.innerHTML = acknowledgeText || '확인'
+    disBtn.innerHTML = dismissText || '취소'
+    ackBtn.style.display = 'inline-block'
+    disBtn.style.display = 'inline-block'
 }
 
 /**
