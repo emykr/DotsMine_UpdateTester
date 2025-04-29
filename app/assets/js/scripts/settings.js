@@ -304,12 +304,18 @@ function settingsNavItemListener(ele, fade = true) {
     }
 }
 
+function fullSettingsSave() {
+    saveSettingsValues()
+    saveModConfiguration()
+    ConfigManager.save()
+    saveDropinModConfiguration()
+    saveShaderpackSettings()
+}
+
 // 설정 저장 버튼 이벤트
 settingsNavDone.onclick = () => {
     fullSettingsSave()
-    switchView(getCurrentView(), VIEWS.landing, 500, 500, () => {
-        document.getElementById('settingsContainer').style.display = 'none'
-    })
+    switchView(getCurrentView(), VIEWS.landing)
 }
 
 /**
