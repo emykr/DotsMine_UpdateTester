@@ -3920,7 +3920,7 @@ flex-direction: column;
     background: url('../images/duckarmri/button2.png') no-repeat center center;
     background-size: contain;
     width: 150px;
-    height: 40px;
+    height: 40px;   
     border: none;
     color: transparent;
     cursor: pointer;
@@ -4166,16 +4166,6 @@ flex-direction: column;
     transition: width 0.2s;
 }
 
-/* start_button이 가려질 때만 playMaskContainer 표시 */
-.start-button[style*="opacity: 0"] + #playMaskContainer {
-    display: block !important;
-}
-
-/* start_button이 보일 때는 playMaskContainer를 강제로 숨김 */
-.start-button[style*="opacity: 1"] ~ #playMaskContainer,
-.start-button[style*="display: block"] ~ #playMaskContainer {
-    display: none !important;
-}
 
 .start-button:disabled {
     opacity: 0.5;

@@ -78,7 +78,7 @@ function setLaunchPercentage(percent){
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
     // 마스킹 효과
-    if(progressMask && playMaskContainer && playMaskContainer.style.display === 'block') {
+    if(progressMask && playMaskContainer && playMaskContainer.style.display === 'none') {
         progressMask.style.width = percent + '%'
     }
 }
@@ -149,7 +149,7 @@ function startGame() {
     // 마스킹 UI 표시
     if(start_button) start_button.style.display = 'none';
     if(playMaskContainer) {
-        playMaskContainer.style.display = 'block';
+        playMaskContainer.style.display = 'none';
         if(progressMask) progressMask.style.width = '0%';
     }
     dlAsync();
@@ -312,40 +312,6 @@ function onGameLaunchComplete() {
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
-// Bind settings button with null check
-const settingsMediaButton = document.getElementById('settingsMediaButton')
-if(settingsMediaButton) {
-    settingsMediaButton.onclick = async e => {
-        const settingsContainer = document.getElementById('settingsContainer')
-        const landingContainer = document.getElementById('landingContainer')
-        if(settingsContainer) settingsContainer.style.display = 'block'
-        if(landingContainer) landingContainer.style.display = 'none'
-        if(typeof prepareSettings === 'function') await prepareSettings()
-    }
-}
-
-// 설정창 닫기(완료) 버튼 처리
-const settingsNavDone = document.getElementById('settingsNavDone')
-if(settingsNavDone) {
-    settingsNavDone.onclick = () => {
-        const settingsContainer = document.getElementById('settingsContainer')
-        const landingContainer = document.getElementById('landingContainer')
-        if(settingsContainer) settingsContainer.style.display = 'none'
-        if(landingContainer) landingContainer.style.display = 'block'
-        // 기존 완료 처리 로직이 있다면 여기에 추가   
-    }
-}
-
-// Bind avatar overlay button with null check
-const avatarOverlayButton = document.getElementById('avatarOverlay')
-if(avatarOverlayButton) {
-    avatarOverlayButton.onclick = async e => {
-        await prepareSettings()
-        switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
-            settingsNavItemListener(document.getElementById('settingsNavAccount'), false)
-        })
-    }
-}
 
 // 선택된 계정 정보 업데이트
 function updateSelectedAccount(authUser){
