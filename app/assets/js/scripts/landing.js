@@ -444,8 +444,10 @@ const refreshServerStatus = async (fade = false) => {
             $('#server_status_wrapper').fadeIn(500)
         })
     } else {
-        document.getElementById('landingPlayerLabel').innerHTML = pLabel
-        document.getElementById('player_count').innerHTML = pVal
+        const playerLabelEl = document.getElementById('landingPlayerLabel')
+        const playerCountEl = document.getElementById('player_count')
+        if(playerLabelEl) playerLabelEl.innerHTML = pLabel
+        if(playerCountEl) playerCountEl.innerHTML = pVal
     }
     
 }
