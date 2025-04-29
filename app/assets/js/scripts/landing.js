@@ -429,31 +429,43 @@ const refreshServerStatus = async (fade = false) => {
 
     let pLabel = Lang.queryJS('landing.serverStatus.server')
     let pVal = Lang.queryJS('landing.serverStatus.offline')
+    let servStat = null
 
     try {
-
-        const servStat = await getServerStatus(47, serv.hostname, serv.port)
-        console.log(servStat)
+        servStat = await getServerStatus(47, serv.hostname, serv.port)
+        // 디버그 로그 추가
+        loggerLanding.debug('Server Status Response:', servStat)
+        loggerLanding.debug('Server Players:', servStat.players)
+        loggerLanding.debug('Is Online:', !!(servStat && servStat.players))
+        
         pLabel = Lang.queryJS('landing.serverStatus.players')
         pVal = servStat.players.online + '/' + servStat.players.max
 
     } catch (err) {
         loggerLanding.warn('Unable to refresh server status, assuming offline.')
-        loggerLanding.debug(err)
-    }
-    if(fade){
-        $('#server_status_wrapper').fadeOut(250, () => {
-            document.getElementById('landingPlayerLabel').innerHTML = pLabel
-            document.getElementById('player_count').innerHTML = pVal
-            $('#server_status_wrapper').fadeIn(500)
-        })
-    } else {
-        const playerLabelEl = document.getElementById('landingPlayerLabel')
-        const playerCountEl = document.getElementById('player_count')
-        if(playerLabelEl) playerLabelEl.innerHTML = pLabel
-        if(playerCountEl) playerCountEl.innerHTML = pVal
+        loggerLanding.debug('Error details:', err)
+        servStat = null
     }
     
+    // 이미지 변경 전 상태 로깅
+    const serverImg = document.getElementById('serverStatus') // 'server-status'에서 'serverStatus'로 수정
+    loggerLanding.debug('Current image path:', serverImg ? serverImg.src : 'Image element not found')
+    loggerLanding.debug('Will change to:', servStat && servStat.players ? 'server_on.png' : 'server_off.png')
+    
+    if(fade){
+        $('#serverStatusContainer').fadeOut(250, () => { // jQuery selector도 수정
+            if(serverImg) {
+                serverImg.src = servStat && servStat.players ? './assets/images/duckarmri/server_on.png' : './assets/images/duckarmri/server_off.png'
+                loggerLanding.debug('Image changed to:', serverImg.src)
+            }
+            $('#serverStatusContainer').fadeIn(500)
+        })
+    } else {
+        if(serverImg) {
+            serverImg.src = servStat && servStat.players ? './assets/images/duckarmri/server_on.png' : './assets/images/duckarmri/server_off.png'
+            loggerLanding.debug('Image changed to:', serverImg.src)
+        }
+    }
 }
 
 refreshMojangStatuses()

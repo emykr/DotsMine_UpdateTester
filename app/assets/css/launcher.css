@@ -4189,6 +4189,14 @@ flex-direction: column;
     background: rgba(255, 0, 0, 0.85);
 }
 
+
+#server_status_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
 .server-status {
     position: fixed;
     top: calc(4.5vh + 10px);
@@ -4198,6 +4206,8 @@ flex-direction: column;
     object-fit: contain;
     z-index: 10;
 }
+
+
 
 #mainImageContainer {
     position: fixed;

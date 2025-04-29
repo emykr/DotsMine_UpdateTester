@@ -84,7 +84,7 @@ async function showMainUI(data){
     await prepareSettings(true)
     updateUIComponents()
     updateSelectedServer(data.getServerById(ConfigManager.getSelectedServer()))
-    // refreshServerStatus()
+     refreshServerStatus()
     setTimeout(async () => {
         document.getElementById('frameBar').style.backgroundColor = 'rgba(0, 0, 0, 0.5)'
         document.body.style.backgroundImage = `url('assets/images/backgrounds/bg.png')`
