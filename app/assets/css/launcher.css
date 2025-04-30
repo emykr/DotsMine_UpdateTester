@@ -4127,20 +4127,26 @@ flex-direction: column;
 
 
 
-.loading-mask {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* none에서 contain으로 변경 */
-    object-position: center; /* left에서 center로 변경 */
-}
-
 #progress-mask {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 0%;
     height: 100%;
     overflow: hidden;
     transition: width 0.3s ease;
+    z-index: 32;
+}
+
+/* 로딩 마스크 이미지 수정 */
+.loading-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 
@@ -4212,24 +4218,24 @@ flex-direction: column;
     display: none !important;
 }
 
-/* Start 버튼 스타일 수정 */
+/* Start 버튼 스타일 수정
 #start_button {
     position: fixed;
     bottom: calc(2.8vh + 10px);
     right: calc(1.5vw);
-    width: auto; /* 1280px 기준 400px -> 31vw */
+    width: auto; 
     height: 95px;
     object-fit: contain;
     cursor: pointer;
     transition: 0.3s ease;
-    z-index: 10;   /* 다른 요소들 위에 표시 */
-    display: block; /* none에서 block으로 변경 */
+    z-index: 10;  
+    display: block; 
     background: transparent;
     border: none;
-}
+} */
 
 
-#playMaskContainer, 
+/* #playMaskContainer, 
 #playButtonContainer {
     position: fixed;
     display: block;
@@ -4238,9 +4244,51 @@ flex-direction: column;
     width: auto;
     height: 95px;
     z-index: 20;
+} */
+
+#playButtonContainer {
+    position: fixed;
+    bottom: calc(2.8vh + 10px);
+    right: calc(1.5vw);
+    width: auto;
+    height: 95px;
+    z-index: 20;
 }
 
+/* 스타트 버튼 수정 */
+#start_button {
+    width: auto;
+    height: 95px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: block;
+    background: transparent;
+    border: none;
+}
 
+/* 로딩 마스크 컨테이너 수정 */
+#playMaskContainer {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    z-index: 30;
+}
+
+#loading-mask-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    z-index: 31;
+}
 
 #Subbackground {
     position: fixed;
