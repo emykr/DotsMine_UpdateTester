@@ -4138,17 +4138,14 @@ flex-direction: column;
     z-index: 32;
 }
 
-/* 로딩 마스크 이미지 수정 */
 .loading-mask {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: block;
+    object-fit: contain;
 }
-
 
 .start-button:disabled {
     opacity: 0.5;
@@ -4246,7 +4243,8 @@ flex-direction: column;
     z-index: 20;
 } */
 
-#playButtonContainer {
+
+#gameControlContainer {
     position: fixed;
     bottom: calc(2.8vh + 10px);
     right: calc(1.5vw);
@@ -4255,8 +4253,13 @@ flex-direction: column;
     z-index: 20;
 }
 
-/* 스타트 버튼 수정 */
-#start_button {
+
+#playButtonContainer {
+    width: 100%;
+    height: 100%;
+}
+
+/* #start_button {
     width: auto;
     height: 95px;
     object-fit: contain;
@@ -4265,17 +4268,24 @@ flex-direction: column;
     display: block;
     background: transparent;
     border: none;
+} */
+
+
+#start_button {
+    width: auto;
+    height: 95px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: 0.3s ease;
 }
 
-/* 로딩 마스크 컨테이너 수정 */
+
 #playMaskContainer {
     position: absolute;
-    display: block;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    visibility: hidden;
     z-index: 30;
 }
 

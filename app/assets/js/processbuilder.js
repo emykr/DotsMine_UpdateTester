@@ -54,6 +54,9 @@ class ProcessBuilder {
         }
     }
 
+
+    
+
     /**
      * 옵션 파일 변경 감시
      * 게임 중 변경된 옵션을 감지
@@ -116,14 +119,20 @@ class ProcessBuilder {
             cwd: this.gameDir,
             detached: ConfigManager.getLaunchDetached()
         })
-
+        
         if(ConfigManager.getLaunchDetached()){
             child.unref()
         }
-
+        
         child.stdout.setEncoding('utf8')
         child.stderr.setEncoding('utf8')
-
+        
+        // [디버깅용 추가]
+        child.stdout.on('data', (data) => {
+            console.log('[DEBUG] processbuilder.js stdout:', data.toString())
+        })
+        
+        // 기존 로그 출력
         child.stdout.on('data', (data) => {
             data.trim().split('\n').forEach(x => console.log(`\x1b[32m[Minecraft]\x1b[0m ${x}`))
         })

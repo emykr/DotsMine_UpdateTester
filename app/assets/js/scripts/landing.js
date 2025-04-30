@@ -211,101 +211,186 @@ const minDuration = 1000
 let proc = null
 let isLaunching = false
 
+const loggerLandingUI = LoggerUtil.getLogger('LandingUI')
+
 // 시작 버튼 클릭 이벤트 리스너
 const start_button = document.getElementById('start_button')
 if(start_button) {
     start_button.onclick = async () => {
+        loggerLandingUI.info('Start button clicked')
         if(proc != null || isLaunching) {
+            loggerLandingUI.warn('Start blocked: proc or isLaunching already set')
             return
         }
-        
         isLaunching = true
+        loggerLandingUI.info('Launching game, toggling UI to loading')
         toggleGameUI(true)
         dlAsync()
     }
 }
 
 // UI 상태 전환 함수
-// UI 상태 전환 함수
 function toggleGameUI(loading) {
+    const gameControlContainer = document.getElementById('gameControlContainer')
     const start_button = document.getElementById('start_button')
     const playMaskContainer = document.getElementById('playMaskContainer')
     const progressMask = document.getElementById('progress-mask')
-    
+
+    loggerLandingUI.info(`toggleGameUI called: loading=${loading}`)
     if(loading) {
         // 로딩 UI로 전환
-        if(start_button) {
-            start_button.style.visibility = 'hidden'
-        }
-        if(playMaskContainer) {
-            playMaskContainer.style.visibility = 'visible'
-            playMaskContainer.style.display = 'block' // display 속성 추가
-            if(progressMask) {
-                progressMask.style.width = '0%'
+        if(gameControlContainer) {
+            if(start_button) {
+                loggerLandingUI.info('Hiding start_button')
+                start_button.style.visibility = 'hidden'
+                start_button.style.opacity = '0'
+            }
+            if(playMaskContainer) {
+                loggerLandingUI.info('Showing playMaskContainer')
+                playMaskContainer.style.visibility = 'visible'
+                if(progressMask) {
+                    loggerLandingUI.info('Resetting progressMask width to 0%')
+                    progressMask.style.width = '0%'
+                }
             }
         }
     } else {
         // 버튼 UI로 복귀
-        if(playMaskContainer) {
-            playMaskContainer.style.visibility = 'hidden'
-            playMaskContainer.style.display = 'none' // display 속성 추가
-        }
-        if(progressMask) {
-            progressMask.style.width = '0%'
-        }
-        
-        // 3~5초 후에 시작 버튼 표시
-        const delay = Math.random() * (5000 - 3000) + 3000
-        setTimeout(() => {
-            if(start_button) {
-                start_button.style.visibility = 'visible'
-                start_button.style.display = 'block' // display 속성 추가
+        if(gameControlContainer) {
             if(playMaskContainer) {
-                    playMaskContainer.style.visibility = 'hidden'
-                    playMaskContainer.style.display = 'none' // display 속성 추가
-                }
-
-
-                
+                loggerLandingUI.info('Hiding playMaskContainer')
+                playMaskContainer.style.visibility = 'hidden'
             }
-        }, delay)
+            if(progressMask) {
+                loggerLandingUI.info('Resetting progressMask width to 0%')
+                progressMask.style.width = '0%'
+            }
+            // 3~5초 후에 시작 버튼 표시
+            const delay = Math.random() * (5000 - 3000) + 3000
+            loggerLandingUI.info(`Will show start_button after ${delay}ms`)
+            setTimeout(() => {
+                if(start_button) {
+                    loggerLandingUI.info('Showing start_button')
+                    start_button.style.visibility = 'visible'
+                    start_button.style.opacity = '1'
+                    start_button.disabled = false
+                } else {
+                    loggerLandingUI.warn('start_button not found in setTimeout')
+                }
+            }, delay)
+        }
     }
 }
-
-// 시작 버튼 클릭 이벤트 리스너
-
 
 // 게임 종료/로딩 완료 핸들러
 function onGameLaunchComplete() {
     isLaunching = false
     remote.getCurrentWindow().setProgressBar(-1)
 
+    loggerLandingUI.info('onGameLaunchComplete called')
+
     // 로딩 UI 숨기기
     const playMaskContainer = document.getElementById('playMaskContainer')
     if(playMaskContainer) {
+        loggerLandingUI.info('Hiding playMaskContainer (onGameLaunchComplete)')
         playMaskContainer.style.visibility = 'hidden'
     }
 
     // 프로그레스바 초기화
     const progressMask = document.getElementById('progress-mask')
     if(progressMask) {
+        loggerLandingUI.info('Resetting progressMask width to 0% (onGameLaunchComplete)')
         progressMask.style.width = '0%'
     }
 
     // 3~5초 후에 시작 버튼 표시
     const delay = Math.random() * (5000 - 3000) + 3000
-    
+    loggerLandingUI.info(`Will show start_button after ${delay}ms (onGameLaunchComplete)`)
     setTimeout(() => {
         const start_button = document.getElementById('start_button')
         if(start_button) {
-            // 페이드 인 효과로 버튼 표시
+            loggerLandingUI.info('Showing start_button (onGameLaunchComplete)')
             start_button.style.transition = 'opacity 0.5s ease-in'
             start_button.style.visibility = 'visible'
-            
-            requestAnimationFrame(() => {
-                start_button.style.opacity = '1'
-            })
-            
+            start_button.style.opacity = '1'
+            start_button.disabled = false
+        } else {
+            loggerLandingUI.warn('start_button not found in setTimeout (onGameLaunchComplete)')
+        }
+    }, delay)
+}
+
+function bindProcCloseEvent() {
+    if(proc && proc.on) {
+        proc.on('close', () => {
+            loggerLandingUI.info('proc.on(close) called')
+            if(hasRPC) {
+                loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
+                DiscordWrapper.shutdownRPC()
+                hasRPC = false
+            }
+            proc = null 
+            isLaunching = false
+
+            // UI 복구
+            const start_button = document.getElementById('start_button')
+            const playMaskContainer = document.getElementById('playMaskContainer')
+
+            if(playMaskContainer) {
+                loggerLandingUI.info('Hiding playMaskContainer (proc close)')
+                playMaskContainer.style.visibility = 'hidden'
+            }
+
+            // 3~5초 후에 시작 버튼 표시
+            const delay = Math.random() * (5000 - 3000) + 3000
+            loggerLandingUI.info(`Will show start_button after ${delay}ms (proc close)`)
+            setTimeout(() => {
+                if(start_button) {
+                    loggerLandingUI.info('Showing start_button (proc close)')
+                    start_button.style.visibility = 'visible'
+                    start_button.style.opacity = '1'
+                    start_button.disabled = false
+                } else {
+                    loggerLandingUI.warn('start_button not found in setTimeout (proc close)')
+                }
+            }, delay)
+
+            remote.getCurrentWindow().setProgressBar(-1)
+        })
+    }
+}
+
+// 게임 종료/로딩 완료 핸들러
+function onGameLaunchComplete() {
+    isLaunching = false
+    remote.getCurrentWindow().setProgressBar(-1)
+
+    loggerLandingUI.info('onGameLaunchComplete called')
+
+    // 로딩 UI 숨기기
+    const playMaskContainer = document.getElementById('playMaskContainer')
+    if(playMaskContainer) {
+        loggerLandingUI.info('Hiding playMaskContainer (onGameLaunchComplete)')
+        playMaskContainer.style.visibility = 'hidden'
+    }
+
+    // 프로그레스바 초기화
+    const progressMask = document.getElementById('progress-mask')
+    if(progressMask) {
+        loggerLandingUI.info('Resetting progressMask width to 0% (onGameLaunchComplete)')
+        progressMask.style.width = '0%'
+    }
+
+    // 3~5초 후에 시작 버튼 표시
+    const delay = Math.random() * (5000 - 3000) + 3000
+    loggerLandingUI.info(`Will show start_button after ${delay}ms (onGameLaunchComplete)`)
+    setTimeout(() => {
+        const start_button = document.getElementById('start_button')
+        if(start_button) {
+            loggerLandingUI.info('Showing start_button (onGameLaunchComplete)')
+            start_button.style.transition = 'opacity 0.5s ease-in'
+            start_button.style.visibility = 'visible'
+            start_button.style.opacity = '1'
             start_button.disabled = false
         }
     }, delay)
@@ -314,7 +399,7 @@ function onGameLaunchComplete() {
 function bindProcCloseEvent() {
     if(proc && proc.on) {
         proc.on('close', () => {
-            console.log('[DEBUG] proc.on(close) called')
+            loggerLandingUI.info('proc.on(close) called')
             if(hasRPC) {
                 loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
                 DiscordWrapper.shutdownRPC()
@@ -322,7 +407,28 @@ function bindProcCloseEvent() {
             }
             proc = null 
             isLaunching = false
-            onGameLaunchComplete()  // UI 복구
+            
+            // UI 복구
+            const start_button = document.getElementById('start_button')
+            const playMaskContainer = document.getElementById('playMaskContainer')
+            
+            if(playMaskContainer) {
+                loggerLandingUI.info('Hiding playMaskContainer (proc close)')
+                playMaskContainer.style.visibility = 'hidden'
+            }
+            
+            // 3~5초 후에 시작 버튼 표시
+            const delay = Math.random() * (5000 - 3000) + 3000
+            loggerLandingUI.info(`Will show start_button after ${delay}ms (proc close)`)
+            setTimeout(() => {
+                if(start_button) {
+                    loggerLandingUI.info('Showing start_button (proc close)')
+                    start_button.style.visibility = 'visible'
+                    start_button.disabled = false
+                }
+            }, delay)
+
+            remote.getCurrentWindow().setProgressBar(-1)
         })
     }
 }
@@ -660,7 +766,22 @@ let hasRPC = false
 // Joined server regex
 // Change this if your server uses something different.
 const GAME_JOINED_REGEX = /\[.+\]: Sound engine started/
-const GAME_LAUNCH_REGEX = /^\[.+\]: (?:MinecraftForge .+ Initialized|ModLauncher .+ starting: .+|Loading Minecraft .+ with Fabric Loader .+)$/
+const GAME_LAUNCH_REGEX = /(ModLauncher .*starting:|ModLauncher running: args)/i
+
+const tempListener = function(data){
+    console.log('[DEBUG] tempListener data:', data)
+    if(GAME_LAUNCH_REGEX.test(data.trim())){
+        console.log('[DEBUG] GAME_LAUNCH_REGEX matched!')
+        const diff = Date.now()-start
+        if(diff < MIN_LINGER) {
+            setTimeout(() => {
+                onLoadComplete()
+            }, MIN_LINGER-diff)
+        } else {
+            onLoadComplete()
+        }
+    }
+}
 
 
 async function dlAsync(login = true) {
@@ -806,27 +927,22 @@ async function dlAsync(login = true) {
             const SERVER_JOINED_REGEX = new RegExp(`\\[.+\\]: \\[CHAT\\] ${authUser.displayName} joined the game`)
 
             const onLoadComplete = () => {
+                console.log('[DEBUG] onLoadComplete 호출됨')
                 toggleLaunchArea(false)
                 if(hasRPC){
                     DiscordWrapper.updateDetails(Lang.queryJS('landing.discord.loading'))
                     proc.stdout.on('data', gameStateChange)
+                    proc.stdout.on('data', tempListener)
+                    console.log('[DEBUG] tempListener 바인딩 완료')
                 }
                 proc.stdout.removeListener('data', tempListener)
                 proc.stderr.removeListener('data', gameErrorListener)
                 
-                // 로딩 UI 초기화 및 버튼 복구
-                const startButton = document.getElementById('start_button')
-                if(startButton) {
-                    startButton.style.display = 'block'
-                    startButton.style.opacity = '1'
-                    startButton.disabled = false
-                    startButton.classList.remove('loading')
-                    startButton.classList.remove('error')
-                    const progressFill = startButton.querySelector('.progress-fill')
-                    if(progressFill) {
-                        progressFill.style.width = '0%'
-                    }
-                }
+                // UI 상태 전환 함수 호출로 변경
+                toggleGameUI(false)
+                
+                // 게임 로딩 완료 처리도 호출
+                onGameLaunchComplete()
             }
 
             const start = Date.now()

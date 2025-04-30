@@ -15,17 +15,21 @@
     <div id="serverStatusContainer">
         <img src="assets/images/duckarmri/server_off.png" class="server-status" id="serverStatus">
     </div>
+    <!-- 시작 버튼과 로딩 UI를 위한 별도 컨테이너 -->
+<div id="gameControlContainer">
+    <!-- 시작 버튼 컨테이너 -->
     <div id="playButtonContainer">
-        <div class="start-button-wrapper"> 
-            <img src="assets/images/duckarmri/start_button.png" id="start_button">
-            <div id="playMaskContainer" style="display:none;">
-                <img src="assets/images/duckarmri/1.png" class="loading-mask">
-                <div id="progress-mask">
-                    <img src="assets/images/duckarmri/2.png" class="loading-mask">
-                </div>
-            </div>
+        <img src="assets/images/duckarmri/start_button.png" id="start_button">
+    </div>
+
+    <!-- 로딩 UI 컨테이너 (처음에는 숨김) -->
+    <div id="playMaskContainer" style="visibility: hidden">
+        <img src="assets/images/duckarmri/1.png" class="loading-mask">
+        <div id="progress-mask">
+            <img src="assets/images/duckarmri/2.png" class="loading-mask">
         </div>
     </div>
+</div>
     <div id="Subbackground">
         
         <img src="assets/images/duckarmri/555.png" class="sublogo" id="sublogo">
