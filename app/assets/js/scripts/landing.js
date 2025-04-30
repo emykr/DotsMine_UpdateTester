@@ -235,25 +235,27 @@ function toggleGameUI(loading) {
     if(loading) {
         // 로딩 UI로 전환
         if(start_button) {
-            start_button.style.display = 'none' // opacity 대신 display 사용
+            start_button.style.display = 'none'
         }
         if(playMaskContainer) {
             playMaskContainer.style.display = 'block'
-        }
-        if(progressMask) {
-            progressMask.style.width = '0%'
+            if(progressMask) {
+                progressMask.style.display = 'block' // 프로그레스바 표시 유지
+                progressMask.style.width = '0%'
+            }
         }
     } else {
         // 버튼 UI로 복귀
-        if(playMaskContainer) {
-            playMaskContainer.style.display = 'none'
-        }
-        if(progressMask) {
-            progressMask.style.width = '0%'
-        }
         if(start_button) {
             start_button.style.display = 'block'
             start_button.disabled = false
+        }
+        if(playMaskContainer) {
+            playMaskContainer.style.display = 'none'
+            if(progressMask) {
+                progressMask.style.width = '0%'
+                // progressMask는 숨기지 않음
+            }
         }
     }
 }
@@ -266,27 +268,7 @@ function setDownloadPercentage(percent) {
     // 프로그래스 마스크 업데이트
     const progressMask = document.getElementById('progress-mask')
     if(progressMask) {
-        progressMask.style.display = 'block'
-        progressMask.style.width = percent + '%'
-    }
-    
-    // 로딩 마스크 컨테이너 업데이트
-    const loadingMaskContainer = document.getElementById('loading-mask-container') 
-    const frameOverlay = document.getElementById('frame-overlay')
-    if(loadingMaskContainer && frameOverlay) {
-        const maxWidth = frameOverlay.getBoundingClientRect().width
-        loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
-    }
-}
-
-// 진행률 업데이트 함수
-function setDownloadPercentage(percent) {
-    // OS 작업표시줄 진행률
-    remote.getCurrentWindow().setProgressBar(percent/100)
-    
-    // 프로그래스 마스크 업데이트
-    const progressMask = document.getElementById('progress-mask')
-    if(progressMask) {
+        progressMask.style.display = 'block' // 항상 표시 유지
         progressMask.style.width = percent + '%'
     }
     
