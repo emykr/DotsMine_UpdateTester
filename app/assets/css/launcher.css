@@ -4125,30 +4125,28 @@ flex-direction: column;
 
 
 
-#playMaskContainer {
-    position: fixed; 
-    bottom: calc(2.8vh + 10px);
-    right: calc(1.5vw);
-    width: auto;
-    height: 95px;
-    display: none;
-    z-index: 9;
-}
 
-.loading-mask {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
 
 #progress-mask {
     position: absolute;
     top: 0;
     left: 0;
-    width: 0%;
+    width: 0%; /* 초기 너비 0% */
     height: 100%;
     overflow: hidden;
-    transition: width 0.2s;
+    transition: width 0.3s ease;
+    z-index: 10;
+}
+
+.loading-mask {
+    position: absolute; /* 절대 위치로 변경 */
+    top: 0;
+    left: 0;
+    width: 100%; /* 항상 전체 너비 */
+    height: 100%;
+    object-fit: none; /* contain에서 none으로 변경 */
+    object-position: left; /* 왼쪽 정렬 추가 */
+    display: block;
 }
 
 
@@ -4231,13 +4229,24 @@ flex-direction: column;
     cursor: pointer;
     transition: 0.3s ease;
     z-index: 100;   /* 다른 요소들 위에 표시 */
+    display: block; /* none에서 block으로 변경 */
+    background: transparent;
+    border: none;
 }
 
 
-#start_button:hover {
-    transform: scale(1.05);
-    filter: brightness(1.2);
+#playMaskContainer, 
+#playButtonContainer {
+    position: fixed;
+    display: block;
+    bottom: calc(2.8vh + 10px);
+    right: calc(1.5vw);
+    width: auto;
+    height: 95px;
+    z-index: 9;
 }
+
+
 
 #Subbackground {
     position: fixed;

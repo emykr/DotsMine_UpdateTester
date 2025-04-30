@@ -73,33 +73,35 @@ function setLaunchDetails(details){
  * 
  * @param {number} percent Percentage (0-100)
  */
-function setLaunchPercentage(percent){
+function setLaunchPercentage(percent) {
+    // 기본 진행률 표시
     launch_progress.setAttribute('max', 100)
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
-    // 마스킹 효과
-    if(progressMask && playMaskContainer && playMaskContainer.style.display === 'none') {
+    
+    // 마스킹 프로그래스바 업데이트
+    const progressMask = document.getElementById('progress-mask')
+    if(progressMask) {
         progressMask.style.width = percent + '%'
     }
 }
 
-/**
- * Set the value of the OS progress bar and display that on the UI.
- * 
- * @param {number} percent Percentage (0-100)
- */
 function setDownloadPercentage(percent) {
+    // OS 작업표시줄 진행률
     remote.getCurrentWindow().setProgressBar(percent/100)
-    setLaunchPercentage(percent)
     
-    // 로딩 마스크 컨테이너 너비 업데이트
+    // 프로그래스 마스크 업데이트 (필수)
+    const progressMask = document.getElementById('progress-mask')
+    if(progressMask) {
+        progressMask.style.width = percent + '%'
+    }
+    
+    // 로딩 마스크 컨테이너 업데이트
     const loadingMaskContainer = document.getElementById('loading-mask-container')
-    if (loadingMaskContainer) {
-        const frameOverlay = document.getElementById('frame-overlay')
-        if(frameOverlay) {
-            const maxWidth = frameOverlay.getBoundingClientRect().width
-            loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
-        }
+    const frameOverlay = document.getElementById('frame-overlay')
+    if(loadingMaskContainer && frameOverlay) {
+        const maxWidth = frameOverlay.getBoundingClientRect().width
+        loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
     }
 }
 
@@ -205,171 +207,129 @@ const MIN_LINGER = 5000
 const minDuration = 1000
 
 // Game execution status variables
-let proc = null 
+// UI 상태 전환 함수 추가
+let proc = null
 let isLaunching = false
 
-// Start button element
+// 시작 버튼 클릭 이벤트 추가
 const start_button = document.getElementById('start_button')
-const playMaskContainer = document.getElementById('playMaskContainer')
-const progressMask = document.getElementById('progress-mask')
-
-// 시작 버튼 클릭 핸들러
 if(start_button) {
-    start_button.addEventListener('click', async () => {
-        const buttonRect = start_button.getBoundingClientRect()
-        
-        // 프레임 오버레이 (1.png)
-        let frameOverlay = document.getElementById('frame-overlay')
-        if (!frameOverlay) {
-            frameOverlay = document.createElement('div')
-            frameOverlay.id = 'frame-overlay'
-            frameOverlay.style.position = 'absolute'
-            frameOverlay.style.zIndex = '1000'
-            frameOverlay.style.background = `url('./assets/images/duckarmri/1.png') no-repeat center center`
-            frameOverlay.style.backgroundSize = '100% 100%'
-            document.body.appendChild(frameOverlay)
-        }
-        
-        // 로딩 마스크 컨테이너 (클리핑용)
-        let loadingMaskContainer = document.getElementById('loading-mask-container')
-        if (!loadingMaskContainer) {
-            loadingMaskContainer = document.createElement('div')
-            loadingMaskContainer.id = 'loading-mask-container'
-            loadingMaskContainer.style.position = 'absolute'
-            loadingMaskContainer.style.zIndex = '1001'
-            loadingMaskContainer.style.overflow = 'hidden'
-            loadingMaskContainer.style.width = '0'
-            document.body.appendChild(loadingMaskContainer)
-        }
-        
-        // 로딩 마스크 (2.png)
-        let loadingMask = document.getElementById('loading-mask')
-        if (!loadingMask) {
-            loadingMask = document.createElement('div')
-            loadingMask.id = 'loading-mask'
-            loadingMask.style.position = 'absolute'
-            loadingMask.style.left = '0'
-            loadingMask.style.top = '0'
-            loadingMask.style.background = `url('./assets/images/duckarmri/2.png') no-repeat center center`
-            loadingMask.style.backgroundSize = '100% 100%'
-            loadingMaskContainer.appendChild(loadingMask)
-        }
-        
-        // 오버레이들 위치 설정
-        frameOverlay.style.top = buttonRect.top + 'px'
-        frameOverlay.style.left = buttonRect.left + 'px'
-        frameOverlay.style.width = buttonRect.width + 'px'
-        frameOverlay.style.height = buttonRect.height + 'px'
-        frameOverlay.style.display = 'block'
-        
-        loadingMaskContainer.style.top = buttonRect.top + 'px'
-        loadingMaskContainer.style.left = buttonRect.left + 'px'
-        loadingMaskContainer.style.height = buttonRect.height + 'px'
-        loadingMaskContainer.style.display = 'block'
-        
-        loadingMask.style.width = buttonRect.width + 'px'
-        loadingMask.style.height = buttonRect.height + 'px'
-        
-        // 원래 버튼 숨기기
-        start_button.style.opacity = '0'
-
-        // 중복 실행 상태 체크
+    start_button.onclick = async () => {
         if(proc != null || isLaunching) {
-            setOverlayContent(
-                Lang.queryJS('landing.launch.alreadyRunningTitle'),
-                '<br>' + Lang.queryJS('landing.launch.alreadyRunningText'),
-                Lang.queryJS('landing.launch.alreadyRunningConfirm'),
-                Lang.queryJS('landing.launch.alreadyRunningCancel')
-            )
-            document.getElementById('overlayContainer').style.pointerEvents = 'all'
-
-            setOverlayHandler(() => {
-                toggleOverlay(false)
-                if(proc && typeof proc.kill === 'function') {
-                    try { proc.kill() } catch(e) {}
-                }
-                proc = null
-                isLaunching = false
-                startGame()
-            })
-
-            setDismissHandler(() => {
-                toggleOverlay(false)
-                // 1.png 마스킹(프레임) 숨기기
-                const frameOverlay = document.getElementById('frame-overlay')
-                if(frameOverlay) frameOverlay.style.display = 'none'
-                // 2.png 마스킹(로딩) 숨기기
-                const loadingMask = document.getElementById('loading-mask')
-                if(loadingMask) loadingMask.style.display = 'none'
-                // 마스킹 컨테이너 숨기기
-                const loadingMaskContainer = document.getElementById('loading-mask-container')
-                if(loadingMaskContainer) loadingMaskContainer.style.display = 'none'
-                // 시작 버튼 보이기
-                if(start_button) {
-                    start_button.style.display = 'block'
-                    start_button.style.opacity = '1'
-                    start_button.disabled = false
-                }
-                // 프로그레스바 마스크 초기화
-                if(progressMask) progressMask.style.width = '0%'
-                // playMaskContainer 숨기기
-                if(playMaskContainer) playMaskContainer.style.display = 'none'
-                // ESC 키 이벤트 강제 발생 (중복 실행 상태에서만)
-                const escEvent = new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, which: 27 })
-                document.dispatchEvent(escEvent)
-            })
-
-            // 반드시 dismissable true로!
-            toggleOverlay(true, true)
             return
         }
-
-        // Hide original button and show loading UI
-        start_button.style.display = 'none'
-        if(playMaskContainer) {
-            playMaskContainer.style.display = 'block'
-            if(progressMask) progressMask.style.width = '0%'
-        }
-        startGame()
-    })
-} else {
-    console.error('Start button element not found in the DOM')
+        
+        isLaunching = true
+        toggleGameUI(true)
+        await dlAsync()
+    }
 }
 
-// 게임 프로세스 종료 시 상태 복구
+// UI 상태 전환 함수
+// UI 상태 전환 함수 수정
+function toggleGameUI(loading) {
+    const start_button = document.getElementById('start_button')
+    const playMaskContainer = document.getElementById('playMaskContainer')
+    const progressMask = document.getElementById('progress-mask')
+    
+    if(loading) {
+        // 로딩 UI로 전환
+        if(start_button) {
+            start_button.style.opacity = '0' // display none 대신 opacity 사용
+        }
+        if(playMaskContainer) {
+            playMaskContainer.style.display = 'block'
+            playMaskContainer.style.opacity = '1'
+        }
+        if(progressMask) {
+            progressMask.style.display = 'block' // 프로그레스바는 보이게 유지
+            progressMask.style.width = '0%'
+            progressMask.style.opacity = '1'
+        }
+    } else {
+        // 버튼 UI로 복귀
+        if(start_button) {
+            start_button.style.opacity = '1'
+        }
+        if(playMaskContainer) {
+            playMaskContainer.style.display = 'none'
+            playMaskContainer.style.opacity = '0'
+        }
+        if(progressMask) {
+            progressMask.style.width = '0%'
+            progressMask.style.opacity = '0'
+        }
+    }
+}
+
+// 진행률 업데이트 함수도 수정
+function setDownloadPercentage(percent) {
+    // OS 작업표시줄 진행률
+    remote.getCurrentWindow().setProgressBar(percent/100)
+    
+    // 프로그래스 마스크 업데이트
+    const progressMask = document.getElementById('progress-mask')
+    if(progressMask) {
+        progressMask.style.display = 'block'
+        progressMask.style.width = percent + '%'
+    }
+    
+    // 로딩 마스크 컨테이너 업데이트
+    const loadingMaskContainer = document.getElementById('loading-mask-container') 
+    const frameOverlay = document.getElementById('frame-overlay')
+    if(loadingMaskContainer && frameOverlay) {
+        const maxWidth = frameOverlay.getBoundingClientRect().width
+        loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
+    }
+}
+
+// 진행률 업데이트 함수
+function setDownloadPercentage(percent) {
+    // OS 작업표시줄 진행률
+    remote.getCurrentWindow().setProgressBar(percent/100)
+    
+    // 프로그래스 마스크 업데이트
+    const progressMask = document.getElementById('progress-mask')
+    if(progressMask) {
+        progressMask.style.width = percent + '%'
+    }
+    
+    // 로딩 마스크 컨테이너 너비 업데이트
+    const loadingMaskContainer = document.getElementById('loading-mask-container')
+    const frameOverlay = document.getElementById('frame-overlay')
+    if(loadingMaskContainer && frameOverlay) {
+        const maxWidth = frameOverlay.getBoundingClientRect().width
+        loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
+    }
+}
+
+// 게임 시작 핸들러
+function startGame() {
+    if(proc != null || isLaunching) return
+    
+    isLaunching = true
+    toggleGameUI(true)
+    dlAsync()
+}
+
+// 게임 종료/로딩 완료 핸들러 
 function onGameLaunchComplete() {
     isLaunching = false
-    // 오버레이 완전히 제거
-    const frameOverlay = document.getElementById('frame-overlay')
-    const loadingMask = document.getElementById('loading-mask')
-    const playMaskContainer = document.getElementById('playMaskContainer')
-    if(frameOverlay) {
-        frameOverlay.style.display = 'none'
-        frameOverlay.remove()
-    }
-    if(loadingMask) {
-        loadingMask.style.display = 'none'
-        loadingMask.remove()
-    }
-    if(playMaskContainer) {
-        playMaskContainer.style.display = 'none';
-        const progressMask = document.getElementById('progress-mask');
-        if(progressMask) progressMask.style.width = '0';
-    }
-    if(start_button) {
-        start_button.style.display = 'block';
-        start_button.style.opacity = '1';
-        start_button.disabled = false; // 항상 활성화
-    }
+    toggleGameUI(false)
     remote.getCurrentWindow().setProgressBar(-1)
 }
 
-// dlAsync 내부(게임 프로세스 종료 이벤트)에서도 반드시 아래처럼!
+// 게임 프로세스 종료 이벤트
 function bindProcCloseEvent() {
     if(proc && proc.on) {
-        proc.on('close', (code, signal) => {
-            loggerLaunchSuite.info('Game process terminated')
-            proc = null
+        proc.on('close', () => {
+            console.log('[DEBUG] proc.on(close) called')
+            if(hasRPC) {
+                loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
+                DiscordWrapper.shutdownRPC()
+                hasRPC = false
+            }
+            proc = null 
             isLaunching = false
             onGameLaunchComplete()
         })
@@ -713,11 +673,6 @@ const GAME_LAUNCH_REGEX = /^\[.+\]: (?:MinecraftForge .+ Initialized|ModLauncher
 
 
 async function dlAsync(login = true) {
-
-    
-    // Login parameter is temporary for debug purposes. Allows testing the validation/downloads without
-    // launching the game.
-
     const loggerLaunchSuite = LoggerUtil.getLogger('LaunchSuite')
 
     setLaunchDetails(Lang.queryJS('landing.dlAsync.loadingServerInfo')) 
@@ -821,6 +776,7 @@ async function dlAsync(login = true) {
         loggerLaunchSuite.info('No invalid files, skipping download.')
         // 다운로드를 건너뛰어도 자연스러운 로딩 애니메이션 추가
         const elapsed = Date.now() - startTime
+        const minDuration = 1000
         if (elapsed < minDuration) {
             const step = 5
             for (let p = 0; p <= 100; p += step) {
@@ -867,12 +823,14 @@ async function dlAsync(login = true) {
                 proc.stdout.removeListener('data', tempListener)
                 proc.stderr.removeListener('data', gameErrorListener)
                 
-                // 로딩 UI 초기화
+                // 로딩 UI 초기화 및 버튼 복구
                 const startButton = document.getElementById('start_button')
                 if(startButton) {
+                    startButton.style.display = 'block'
+                    startButton.style.opacity = '1'
+                    startButton.disabled = false
                     startButton.classList.remove('loading')
                     startButton.classList.remove('error')
-                    startButton.disabled = false
                     const progressFill = startButton.querySelector('.progress-fill')
                     if(progressFill) {
                         progressFill.style.width = '0%'
@@ -916,7 +874,8 @@ async function dlAsync(login = true) {
 
             // Build Minecraft process
             proc = pb.build()
-            bindProcCloseEvent()
+            console.log('[DEBUG] proc 할당:', !!proc)
+            bindProcCloseEvent() // 반드시 여기서만!
 
             if(!proc) {
                 throw new Error('Failed to create game process')
@@ -936,41 +895,15 @@ async function dlAsync(login = true) {
             if(distro.rawDistribution.discord != null && serv.rawServer.discord != null){
                 DiscordWrapper.initRPC(distro.rawDistribution.discord, serv.rawServer.discord)
                 hasRPC = true
-                if(proc && proc.on) {
-                    proc.on('close', (code, signal) => {
-                        loggerLaunchSuite.info('Shutting down Discord Rich Presence..')
-                        DiscordWrapper.shutdownRPC()
-                        hasRPC = false
-                        proc = null
-                        isLaunching = false
-                        onGameLaunchComplete()
-                    })
-                }
-            } else {
-                if(proc && proc.on) {
-                    proc.on('close', (code, signal) => {
-                        loggerLaunchSuite.info('Game process terminated')
-                        proc = null
-                        isLaunching = false
-                        onGameLaunchComplete()
-                    })
-                }
             }
-            // 게임 프로세스가 시작되면 2초 뒤에 무조건 로딩바를 숨김
-            setTimeout(() => {
-                onGameLaunchComplete()
-            }, 2000)
         }
     } catch(err) {
         loggerLaunchSuite.error('Error during launch', err)
-        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringLaunchTitle'), err.message || Lang.queryJS('landing.dlAsync.checkConsoleForDetails'))
-        proc = null
-        isLaunching = false
-        // 에러 발생 시에도 로딩바/버튼 UI 초기화
-        onGameLaunchComplete()
+        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringLaunchTitle'), err.displayable || Lang.queryJS('landing.dlAsync.seeConsoleForDetails'))
+        return
     }
-
 }
+
 
 /**
  * News Loading Functions
