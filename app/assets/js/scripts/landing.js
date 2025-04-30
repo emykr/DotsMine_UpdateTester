@@ -235,29 +235,25 @@ function toggleGameUI(loading) {
     if(loading) {
         // 로딩 UI로 전환
         if(start_button) {
-            start_button.style.opacity = '0' // display none 대신 opacity 사용
+            start_button.style.display = 'none' // opacity 대신 display 사용
         }
         if(playMaskContainer) {
             playMaskContainer.style.display = 'block'
-            playMaskContainer.style.opacity = '1'
         }
         if(progressMask) {
-            progressMask.style.display = 'block' // 프로그레스바는 보이게 유지
             progressMask.style.width = '0%'
-            progressMask.style.opacity = '1'
         }
     } else {
         // 버튼 UI로 복귀
-        if(start_button) {
-            start_button.style.opacity = '1'
-        }
         if(playMaskContainer) {
             playMaskContainer.style.display = 'none'
-            playMaskContainer.style.opacity = '0'
         }
         if(progressMask) {
             progressMask.style.width = '0%'
-            progressMask.style.opacity = '0'
+        }
+        if(start_button) {
+            start_button.style.display = 'block'
+            start_button.disabled = false
         }
     }
 }
