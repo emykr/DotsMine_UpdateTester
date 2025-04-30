@@ -259,6 +259,14 @@ function toggleGameUI(loading) {
         setTimeout(() => {
             if(start_button) {
                 start_button.style.visibility = 'visible'
+                start_button.style.display = 'block' // display 속성 추가
+            if(playMaskContainer) {
+                    playMaskContainer.style.visibility = 'hidden'
+                    playMaskContainer.style.display = 'none' // display 속성 추가
+                }
+
+
+                
             }
         }, delay)
     }
@@ -270,12 +278,22 @@ function toggleGameUI(loading) {
 // 게임 종료/로딩 완료 핸들러
 function onGameLaunchComplete() {
     isLaunching = false
-    toggleGameUI(false) // UI 복귀 시작
     remote.getCurrentWindow().setProgressBar(-1)
 
+    // 로딩 UI 숨기기
+    const playMaskContainer = document.getElementById('playMaskContainer')
+    if(playMaskContainer) {
+        playMaskContainer.style.visibility = 'hidden'
+    }
+
+    // 프로그레스바 초기화
+    const progressMask = document.getElementById('progress-mask')
+    if(progressMask) {
+        progressMask.style.width = '0%'
+    }
 
     // 3~5초 후에 시작 버튼 표시
-    const delay = Math.random() * (5000 - 3000) + 3000 // 3000~5000ms 사이 랜덤
+    const delay = Math.random() * (5000 - 3000) + 3000
     
     setTimeout(() => {
         const start_button = document.getElementById('start_button')
@@ -283,19 +301,12 @@ function onGameLaunchComplete() {
             // 페이드 인 효과로 버튼 표시
             start_button.style.transition = 'opacity 0.5s ease-in'
             start_button.style.visibility = 'visible'
-            start_button.style.opacity = '0'
             
             requestAnimationFrame(() => {
                 start_button.style.opacity = '1'
             })
             
             start_button.disabled = false
-        }
-        
-        // 로딩 UI 숨기기
-        const playMaskContainer = document.getElementById('playMaskContainer')
-        if(playMaskContainer) {
-            playMaskContainer.style.visibility = 'hidden'
         }
     }, delay)
 }
