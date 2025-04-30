@@ -208,7 +208,6 @@ const minDuration = 1000
 let proc = null 
 let isLaunching = false
 
-
 // Start button element
 const start_button = document.getElementById('start_button')
 const playMaskContainer = document.getElementById('playMaskContainer')
@@ -340,8 +339,6 @@ if(start_button) {
 // 게임 프로세스 종료 시 상태 복구
 function onGameLaunchComplete() {
     isLaunching = false
-    toggleLaunchArea(false)
-    setLaunchEnabled(true)
     // 오버레이 완전히 제거
     const frameOverlay = document.getElementById('frame-overlay')
     const loadingMask = document.getElementById('loading-mask')
@@ -368,13 +365,15 @@ function onGameLaunchComplete() {
 }
 
 // dlAsync 내부(게임 프로세스 종료 이벤트)에서도 반드시 아래처럼!
-if(proc && proc.on) {
-    proc.on('close', (code, signal) => {
-        loggerLaunchSuite.info('Game process terminated')
-        proc = null
-        isLaunching = false
-        onGameLaunchComplete()
-    })
+function bindProcCloseEvent() {
+    if(proc && proc.on) {
+        proc.on('close', (code, signal) => {
+            loggerLaunchSuite.info('Game process terminated')
+            proc = null
+            isLaunching = false
+            onGameLaunchComplete()
+        })
+    }
 }
 
 
@@ -917,6 +916,7 @@ async function dlAsync(login = true) {
 
             // Build Minecraft process
             proc = pb.build()
+            bindProcCloseEvent()
 
             if(!proc) {
                 throw new Error('Failed to create game process')
