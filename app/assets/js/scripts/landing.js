@@ -153,7 +153,7 @@ async function startGame() {
         // 중복 실행 확인 대화상자 표시
         setOverlayContent(
             Lang.queryJS('landing.launch.alreadyRunningTitle'),
-            Lang.queryJS('landing.launch.alreadyRunningText'),
+            Lang.queryJS('<br>landing.launch.alreadyRunningText'),
             Lang.queryJS('landing.launch.alreadyRunningConfirm'),
             Lang.queryJS('landing.launch.alreadyRunningCancel')
         )
@@ -242,13 +242,12 @@ if(start_button) {
 
 // UI 상태 전환 함수
 function toggleGameUI(loading) {
-    const gameControlContainer = document.getElementById('gameControlContainer')
     const playButtonContainer = document.getElementById('playButtonContainer')
     const playMaskContainer = document.getElementById('playMaskContainer')
     const progressMask = document.getElementById('progress-mask')
     const startButton = document.getElementById('start_button')
 
-    loggerLandingUI.info(`toggleGameUI called with loading=${loading}`)
+    loggerLandingUI.info(`UI 상태 전환: ${loading ? '로딩' : '시작 버튼'}으로 전환`)
 
     if(loading) {
         // 로딩 UI로 전환
@@ -264,6 +263,23 @@ function toggleGameUI(loading) {
         if(startButton) {
             startButton.disabled = true
         }
+
+        // 15초 후에 자동으로 시작 버튼으로 전환
+        setTimeout(() => {
+            if(playMaskContainer) {
+                playMaskContainer.style.visibility = 'hidden'
+            }
+            if(playButtonContainer) {
+                playButtonContainer.style.visibility = 'visible'
+                playButtonContainer.style.opacity = '1'
+            }
+            if(progressMask) {
+                progressMask.style.width = '0%'
+            }
+            if(startButton) {
+                startButton.disabled = false
+            }
+        }, 15000) // 15초
     } else {
         // 시작 버튼으로 복귀
         if(playMaskContainer) {
@@ -271,13 +287,12 @@ function toggleGameUI(loading) {
         }
         if(playButtonContainer) {
             playButtonContainer.style.visibility = 'visible'
-            playButtonContainer.style.display = 'block'
         }
         if(progressMask) {
             progressMask.style.width = '0%'
         }
         if(startButton) {
-            startButton.disabled = false
+            startButton.disabled = false 
         }
     }
 }
@@ -1314,3 +1329,34 @@ async function loadNews(){
 
     return await promise
 }
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    // 시작 시 로딩 UI 표시
+    const playButtonContainer = document.getElementById('playButtonContainer')
+    const playMaskContainer = document.getElementById('playMaskContainer')
+    const progressMask = document.getElementById('progress-mask')
+    
+    if(playButtonContainer) {
+        playButtonContainer.style.visibility = 'hidden'
+    }
+    if(playMaskContainer) {
+        playMaskContainer.style.visibility = 'visible'
+    }
+    if(progressMask) {
+        progressMask.style.width = '0%'
+    }
+
+    // 3초 후에 로딩 완료 처리
+    setTimeout(() => {
+        if(playMaskContainer) {
+            playMaskContainer.style.visibility = 'hidden'
+        }
+        if(playButtonContainer) {
+            playButtonContainer.style.visibility = 'visible'
+        }
+        if(progressMask) {
+            progressMask.style.width = '0%' 
+        }
+    }, 3000)
+})

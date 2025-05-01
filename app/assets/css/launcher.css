@@ -4184,7 +4184,7 @@ flex-direction: column;
     width: 0%;
     height: 100%;
     overflow: hidden;
-    transition: width 0.3s ease;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 32;
 }
 
@@ -4195,6 +4195,7 @@ flex-direction: column;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    opacity: 0.95;
 }
 
 .start-button:disabled {
@@ -4323,17 +4324,14 @@ flex-direction: column;
 } */
 
 
-/* #playMaskContainer, 
+#playMaskContainer, 
 #playButtonContainer {
-    position: fixed;
-    display: block;
-    bottom: calc(2.8vh + 10px);
-    right: calc(1.5vw);
-    width: auto;
-    height: 95px;
-    z-index: 20;
-} */
+    transition: visibility 0.5s ease;
+}
 
+#start_button {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
 #gameControlContainer {
     position: fixed;
@@ -4357,7 +4355,7 @@ flex-direction: column;
     height: 100%;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.3s ease, filter 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
 }
 
 #start_button:hover {
@@ -4388,13 +4386,18 @@ flex-direction: column;
     width: 0%;
     height: 100%;
     overflow: hidden;
-    transition: width 0.3s ease-in-out;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 32;
 }
 
 .loading-mask {
+    position: absolute; 
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    opacity: 0.95;
 }
 
 

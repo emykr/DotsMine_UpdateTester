@@ -17,15 +17,15 @@
     </div>
     <!-- 시작 버튼과 로딩 UI를 위한 별도 컨테이너 -->
     <div id="gameControlContainer">
-        <!-- 시작 버튼 컨테이너 -->
-        <div id="playButtonContainer">
-            <img src="assets/images/duckarmri/start_button.png" id="start_button">
+        <!-- 시작 버튼 컨테이너 - 처음에는 숨김 -->
+        <div id="playButtonContainer" style="visibility: hidden;">
+            <img id="start_button" src="assets/images/duckarmri/start_button.png" disabled/>
         </div>
 
-        <!-- 로딩 UI 컨테이너 -->
-        <div id="playMaskContainer">
+        <!-- 로딩 UI 컨테이너 - 처음에 표시 -->
+        <div id="playMaskContainer" style="visibility: visible;">
             <img src="assets/images/duckarmri/1.png" class="loading-mask">
-            <div id="progress-mask">
+            <div id="progress-mask" style="width: 0%;">
                 <img src="assets/images/duckarmri/2.png" class="loading-mask">
             </div>
         </div>
