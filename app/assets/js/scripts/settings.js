@@ -1630,6 +1630,16 @@ function renderCredits(credits) {
             contentContainer.appendChild(ul)
         }
 
+        if (entry.message) {
+            const messageDiv = document.createElement('div')
+            messageDiv.className = 'creditMessage'
+            const messageStyle = []
+            if(entry.bold) messageStyle.push('font-weight: bold')
+            if(entry.italic) messageStyle.push('font-style: italic')
+            messageDiv.innerHTML = `<span style="${messageStyle.join(';')}">"${entry.message}"</span>`
+            contentContainer.appendChild(messageDiv)
+        }
+
         item.appendChild(contentContainer)
         creditsContent.appendChild(item)
 

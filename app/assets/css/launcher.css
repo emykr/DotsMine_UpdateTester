@@ -4048,9 +4048,10 @@ flex-direction: column;
 }
 /* Credits styling */
 #creditsContainer {
-    height: 100%;
+    height: calc(100% - 60px);
+    margin: 20px;
     padding: 20px;
-    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 #creditsContainer::-webkit-scrollbar {
@@ -4069,56 +4070,42 @@ flex-direction: column;
 #creditsContent {
     width: 100%;
     margin: 0 auto;
+    padding-bottom: 40px;
 }
 
 .creditItem {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(126, 126, 126, 0.57);
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.5s ease;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: flex-start;
 }
 
 .creditImageContainer {
-    flex: 0 0 120px;
+    flex: 0 0 100px;
     margin-right: 20px;
 }
 
 .creditImage {
     width: 100%;
     height: auto;
-    border-radius: 4px;
+    max-height: 100px;
+    object-fit: contain;
 }
 
 .creditContentContainer {
     flex: 1;
-    display: flex;
-    flex-direction: column;
 }
 
-.creditItem h3 {
-    color: #ffffff;
-    margin: 0 0 10px 0;
+.creditMessage {
+    margin-top: 10px;
+    color: #a5a5a5;
+    font-size: 14px;
 }
-
-.creditItem p {
-    color: #cccccc;
-    margin: 5px 0;
-}
-
-.creditItem ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
-}
-
-.creditItem li {
-    color: #cccccc;
-    margin: 5px 0;
-}
-
 
 .button-right-container {
     position: fixed;
@@ -4409,4 +4396,54 @@ flex-direction: column;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#settingsTabCredits {
+    height: calc(100% - 100px);
+    overflow-y: auto;
+}
+
+#creditsContainer {
+    height: calc(100% - 60px);
+    margin: 20px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#creditsContent {
+    padding-bottom: 40px;
+}
+
+.creditItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.5s ease;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.creditImageContainer {
+    flex: 0 0 100px;
+    margin-right: 20px;
+}
+
+.creditImage {
+    width: 100%;
+    height: auto;
+    max-height: 100px;
+    object-fit: contain;
+}
+
+.creditContentContainer {
+    flex: 1;
+}
+
+.creditMessage {
+    margin-top: 10px;
+    color: #a5a5a5;
+    font-size: 14px;
 }

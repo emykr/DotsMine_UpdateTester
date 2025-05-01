@@ -1,50 +1,72 @@
 [
     {
         "title": "프로젝트 기획",
-        "name": "GodLight_Dev",
+        "name": "김금치",
         "image": "assets/images/seadriver.png",
         "imageAlign": "left",
-        "imagePosition": "top"
+        "imagePosition": "top",
+        "message": "더 나은 게임 경험을 위해 노력하겠습니다.",
+        "bold": false,
+        "italic": false
     },
     {
-        "title": "개발팀",
-        "name": "DotsMine Developers",
-        "image": "assets/images/icons/sevenstar.svg",
+        "title": "개발",
+        "name": "DotsMine Studio",
+        "image": "assets/images/duckarmri/DotsMine_Logo.png",
         "imageAlign": "left",
-        "imagePosition": "top"
+        "imagePosition": "top",
+        "message": "최고의 성능과 안정성을 제공하기 위해 최선을 다하고 있습니다.",
+        "bold": true,
+        "italic": false
     },
-
     {
-
-        "title": "샘플",
-        "name": "DotsMine Sample Team",
+        "title": "개발",
+        "name": "순령",
         "image": "assets/images/duckarmri.png",
         "imageAlign": "left",
-        "imagePosition": "top"
-
+        "imagePosition": "top",
+        "message": "더 나은 사용자 경험을 위해 노력하겠습니다.",
+        "bold": false,
+        "italic": false
     },
     {
-        "title": "UI/UX 디자인",
-        "name": "DotsMine Design Team",
+        "title": "디자인",
+        "name": "벨라비",
         "image": "assets/images/icons/profile.svg",
         "imageAlign": "right",
-        "imagePosition": "top"
+        "imagePosition": "top",
+        "message": "아름답고 직관적인 디자인을 만들기 위해 노력하겠습니다.",
+        "bold": false,
+        "italic": false
     },
     {
-        "title": "서버 관리자",
-        "name": "DotsMine Server Team",
+        "title": "디자인",
+        "name": "제갈혜선",
+        "image": "assets/images/icons/profile.svg",
+        "imageAlign": "right",
+        "imagePosition": "top",
+        "message": "사용자 친화적인 디자인을 위해 항상 고민하고 있습니다.",
+        "bold": false,
+        "italic": false
+    },
+    {
+        "title": "디자인",
+        "name": "샤를로트",
+        "image": "assets/images/icons/profile.svg",
+        "imageAlign": "right",
+        "imagePosition": "top",
+        "message": "감각적인 디자인으로 즐거움을 선사하겠습니다.",
+        "bold": false,
+        "italic": false
+    },
+    {
+        "title": "스토리",
+        "name": "야옹메이",
         "image": "assets/images/icons/minecraft.ico",
         "imageAlign": "center",
-        "imagePosition": "bottom"
-    },
-    {
-        "title": "특별한 감사",
-        "names": [
-            "Minecraft 커뮤니티",
-            "오픈소스 기여자들",
-            "저희를 사랑해주시는 유저분들"
-        ],
-        "imageAlign": "center",
-        "imagePosition": "top"
+        "imagePosition": "top",
+        "message": "재미있고 몰입감 있는 스토리를 만들기 위해 노력하겠습니다.",
+        "bold": false,
+        "italic": false
     }
 ]
