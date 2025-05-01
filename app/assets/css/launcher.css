@@ -3653,6 +3653,56 @@ flex-direction: column;
     color: rgba(165, 165, 165, 0.75);
 }
 
+/* Duplicate launch confirmation dialog styles */
+.overlayDuplicateContainer {
+    background: rgba(0, 0, 0, 0.85);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.overlayDuplicateTitle {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.overlayDuplicateDesc {
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.overlayDuplicateButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.overlayDuplicateConfirm {
+    background: #2C70B9;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.overlayDuplicateDismiss {
+    background: #6b6b6b;
+    color: white;
+    padding: 8px 16px;
+    border: none; 
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.overlayDuplicateConfirm:hover,
+.overlayDuplicateDismiss:hover {
+    filter: brightness(1.2);
+}
+
 /* * *
 * Overlay View (Server + Account Selection Content)
 * * */
@@ -4159,7 +4209,48 @@ flex-direction: column;
     
 }
 
+#Subbackground {
+    position: fixed;
+    left: 32%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+    width: 55%;  /* 50%에서 100%로 변경 */
+    height: 55%; /* 50%에서 100%로 변경 */
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+/* 배경 이미지 - 기본 해상도(1280x720) */
+#sublogo {
+    width: auto;    /* 고정된 50% 대신 auto 사용 */
+    height: 100%;   /* 컨테이너 높이에 맞춤 */
+    max-width: 100%; /* 너비가 컨테이너를 넘지 않도록 제한 */
+    object-fit: contain; /* 항상 비율 유지 */
+}
+
+.sublogo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#logo-container {
+    position: fixed;
+    left: 30%;
+    top: 13%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .start-button {
     z-index: 10;
@@ -4246,39 +4337,39 @@ flex-direction: column;
 
 #gameControlContainer {
     position: fixed;
-    bottom: calc(2.8vh + 10px);
-    right: calc(1.5vw);
-    width: auto;
+    bottom: calc(2.8vh + 10px);  /* button-right-container와 동일한 위치로 조정 */
+    right: calc(0vw + 20px);  /* button-right-container와 동일하게 맞춤 */
+    width: 400px;  /* button-right-container와 같은 너비 */
     height: 95px;
     z-index: 20;
 }
 
-
 #playButtonContainer {
+    position: absolute;
     width: 100%;
     height: 100%;
+    visibility: visible;
+    transition: visibility 0.3s ease;
 }
-
-/* #start_button {
-    width: auto;
-    height: 95px;
-    object-fit: contain;
-    cursor: pointer;
-    transition: 0.3s ease;
-    display: block;
-    background: transparent;
-    border: none;
-} */
-
 
 #start_button {
-    width: auto;
-    height: 95px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
+#start_button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+#start_button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
 #playMaskContainer {
     position: absolute;
@@ -4286,90 +4377,24 @@ flex-direction: column;
     left: 0;
     width: 100%;
     height: 100%;
+    visibility: hidden;
     z-index: 30;
 }
 
-#loading-mask-container {
+#progress-mask {
     position: absolute;
     top: 0;
     left: 0;
     width: 0%;
     height: 100%;
     overflow: hidden;
-    transition: width 0.3s ease;
-    z-index: 31;
+    transition: width 0.3s ease-in-out;
 }
 
-#Subbackground {
-    position: fixed;
-    left: 32%;
-    top: 55%;
-    transform: translate(-50%, -50%);
-    width: 55%;  /* 50%에서 100%로 변경 */
-    height: 55%; /* 50%에서 100%로 변경 */
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* 배경 이미지 - 기본 해상도(1280x720) */
-#sublogo {
-    width: auto;    /* 고정된 50% 대신 auto 사용 */
-    height: 100%;   /* 컨테이너 높이에 맞춤 */
-    max-width: 100%; /* 너비가 컨테이너를 넘지 않도록 제한 */
-    object-fit: contain; /* 항상 비율 유지 */
-}
-
-.sublogo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.loading-mask {
     width: 100%;
     height: 100%;
     object-fit: contain;
-}
-
-#logo-container {
-    position: fixed;
-    left: 30%;
-    top: 13%;
-    transform: translate(-50%, -50%);
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-/* 오버레이 버튼 컨테이너 */
-.overlayButtons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-/* 오버레이 버튼 스타일 */
-.overlayButton {
-    padding: 10px 20px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-/* 취소 버튼 스타일 */
-.overlayDismiss {
-    background: #6b6b6b;
-    color: white;
-}
-
-/* 확인 버튼 스타일 */
-.overlayConfirm {
-    background: #2C70B9;
-    color: white;
 }
 
 
