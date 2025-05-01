@@ -3955,9 +3955,10 @@ flex-direction: column;
     width: 200px;
     height: 50px;
     border: none;
-    color: transparent; /* 기존 텍스트 숨기기 */
+    color: transparent;
     cursor: pointer;
     transition: 0.3s ease;
+    border-radius: 0;
 }
 #serverSelectConfirm:hover,
 #accountSelectConfirm:hover {
@@ -3976,6 +3977,7 @@ flex-direction: column;
     cursor: pointer;
     transition: 0.3s ease;
     margin-top: 10px;
+    border-radius: 0;
 }
 #serverSelectCancel:hover,
 #accountSelectCancel:hover {
@@ -4183,8 +4185,9 @@ flex-direction: column;
     left: 0;
     width: 0%;
     height: 100%;
-    overflow: hidden;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background: url('../images/duckarmri/1.png') repeat-x;
+    background-size: auto 100%;
+    transition: width 0.4s ease-out;
     z-index: 32;
 }
 
@@ -4194,8 +4197,7 @@ flex-direction: column;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    opacity: 0.95;
+    background-color: rgba(43, 43, 43, 0.3);
 }
 
 .start-button:disabled {
@@ -4210,48 +4212,7 @@ flex-direction: column;
     
 }
 
-#Subbackground {
-    position: fixed;
-    left: 32%;
-    top: 55%;
-    transform: translate(-50%, -50%);
-    width: 55%;  /* 50%에서 100%로 변경 */
-    height: 55%; /* 50%에서 100%로 변경 */
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
-/* 배경 이미지 - 기본 해상도(1280x720) */
-#sublogo {
-    width: auto;    /* 고정된 50% 대신 auto 사용 */
-    height: 100%;   /* 컨테이너 높이에 맞춤 */
-    max-width: 100%; /* 너비가 컨테이너를 넘지 않도록 제한 */
-    object-fit: contain; /* 항상 비율 유지 */
-}
-
-.sublogo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-#logo-container {
-    position: fixed;
-    left: 30%;
-    top: 13%;
-    transform: translate(-50%, -50%);
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 .start-button {
     z-index: 10;
@@ -4324,14 +4285,17 @@ flex-direction: column;
 } */
 
 
-#playMaskContainer, 
+/* #playMaskContainer, 
 #playButtonContainer {
-    transition: visibility 0.5s ease;
-}
+    position: fixed;
+    display: block;
+    bottom: calc(2.8vh + 10px);
+    right: calc(1.5vw);
+    width: auto;
+    height: 95px;
+    z-index: 20;
+} */
 
-#start_button {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
 
 #gameControlContainer {
     position: fixed;
@@ -4355,7 +4319,7 @@ flex-direction: column;
     height: 100%;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 #start_button:hover {
@@ -4385,20 +4349,64 @@ flex-direction: column;
     left: 0;
     width: 0%;
     height: 100%;
-    overflow: hidden;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background: url('../images/duckarmri/1.png') repeat-x;
+    background-size: auto 100%;
+    transition: width 0.4s ease-out;
     z-index: 32;
+    border-radius: 10px;
 }
 
 .loading-mask {
-    position: absolute; 
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    opacity: 0.95;
+    background-color: rgba(43, 43, 43, 0.3);
+    border-radius: 10px;
 }
 
 
 
+#Subbackground {
+    position: fixed;
+    left: 32%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+    width: 55%;  /* 50%에서 100%로 변경 */
+    height: 55%; /* 50%에서 100%로 변경 */
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 배경 이미지 - 기본 해상도(1280x720) */
+#sublogo {
+    width: auto;    /* 고정된 50% 대신 auto 사용 */
+    height: 100%;   /* 컨테이너 높이에 맞춤 */
+    max-width: 100%; /* 너비가 컨테이너를 넘지 않도록 제한 */
+    object-fit: contain; /* 항상 비율 유지 */
+}
+
+.sublogo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#logo-container {
+    position: fixed;
+    left: 30%;
+    top: 13%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

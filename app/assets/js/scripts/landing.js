@@ -153,7 +153,7 @@ async function startGame() {
         // 중복 실행 확인 대화상자 표시
         setOverlayContent(
             Lang.queryJS('landing.launch.alreadyRunningTitle'),
-            Lang.queryJS('<br>landing.launch.alreadyRunningText'),
+            Lang.queryJS('landing.launch.alreadyRunningText'),
             Lang.queryJS('landing.launch.alreadyRunningConfirm'),
             Lang.queryJS('landing.launch.alreadyRunningCancel')
         )
