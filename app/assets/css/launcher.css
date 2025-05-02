@@ -1218,7 +1218,7 @@ body, button {
 .settingsTabHeader {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .settingsTabHeaderText {
     font-size: 20px;
@@ -4046,48 +4046,31 @@ flex-direction: column;
 .rotating {
     animation: rotating 10s linear infinite;
 }
-/* Credits styling */
-#creditsContainer {
-    height: calc(100% - 60px);
-    margin: 20px;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-#creditsContainer::-webkit-scrollbar {
-    width: 2px;
-}
-
-#creditsContainer::-webkit-scrollbar-track {
-    display: none;
-}
-
-#creditsContainer::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.50);
-}
 
 #creditsContent {
-    width: 100%;
-    margin: 0 auto;
-    padding-bottom: 40px;
+    padding: 0;
+    overflow: visible;
 }
 
 .creditItem {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
     opacity: 0;
     transform: translateX(-20px);
     transition: all 0.5s ease;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    padding: 20px;
+    padding: 12px;
+}
+
+.creditItem[data-type="project"] {
+    margin-bottom: 35px; /* 프로젝트 기획과 다음 항목 사이 간격 증가 */
 }
 
 .creditImageContainer {
     flex: 0 0 100px;
-    margin-right: 20px;
+    margin-right: 15px;
 }
 
 .creditImage {
@@ -4101,8 +4084,14 @@ flex-direction: column;
     flex: 1;
 }
 
+.creditTitle {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 4px;
+}
+
 .creditMessage {
-    margin-top: 10px;
+    margin-top: 5px;
     color: #a5a5a5;
     font-size: 14px;
 }
@@ -4162,20 +4151,26 @@ flex-direction: column;
     height: 95px;
 }
 
-
-
-
-
 #progress-mask {
     position: absolute;
     top: 0;
     left: 0;
     width: 0%;
     height: 100%;
-    background: url('../images/duckarmri/1.png') repeat-x;
-    background-size: auto 100%;
-    transition: width 0.4s ease-out;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.8) 20%,
+        rgba(255, 255, 255, 0.6) 40%,
+        rgba(255, 255, 255, 0.4) 60%,
+        rgba(255, 255, 255, 0.2) 80%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    transition: width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
     z-index: 32;
+    mix-blend-mode: overlay;
+    border-radius: 10px;
+    border-right: 2px solid rgba(255,255,255,0.7);
 }
 
 .loading-mask {
@@ -4185,6 +4180,19 @@ flex-direction: column;
     width: 100%;
     height: 100%;
     background-color: rgba(43, 43, 43, 0.3);
+    border-radius: 10px;
+}
+
+#playMaskContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    z-index: 30;
+    overflow: hidden;
+    border-radius: 10px;
 }
 
 .start-button:disabled {
@@ -4272,17 +4280,6 @@ flex-direction: column;
 } */
 
 
-/* #playMaskContainer, 
-#playButtonContainer {
-    position: fixed;
-    display: block;
-    bottom: calc(2.8vh + 10px);
-    right: calc(1.5vw);
-    width: auto;
-    height: 95px;
-    z-index: 20;
-} */
-
 
 #gameControlContainer {
     position: fixed;
@@ -4307,6 +4304,22 @@ flex-direction: column;
     object-fit: contain;
     cursor: pointer;
     transition: transform 0.3s ease, filter 0.3s ease;
+    border: none;
+    background: none;
+    padding: 0;
+    position: relative;
+}
+
+#start_button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../images/duckarmri/2.png') no-repeat center center;
+    background-size: contain;
+    z-index: 1;
 }
 
 #start_button:hover {
@@ -4328,18 +4341,7 @@ flex-direction: column;
     height: 100%;
     visibility: hidden;
     z-index: 30;
-}
-
-#progress-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0%;
-    height: 100%;
-    background: url('../images/duckarmri/1.png') repeat-x;
-    background-size: auto 100%;
-    transition: width 0.4s ease-out;
-    z-index: 32;
+    overflow: hidden;
     border-radius: 10px;
 }
 
@@ -4399,36 +4401,55 @@ flex-direction: column;
 }
 
 #settingsTabCredits {
-    height: calc(100% - 100px);
-    overflow-y: auto;
-}
+    height: 100%;
+    padding: 0 20px 20px 20px;
+}s
 
 #creditsContainer {
-    height: calc(100% - 60px);
-    margin: 20px;
-    padding: 20px;
+    height: calc(100% - 120px); /* 헤더 높이를 제외한 나머지 공간 */
     overflow-y: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 #creditsContent {
-    padding-bottom: 40px;
+    padding: 20px;
 }
+
+/* 스크롤바 스타일 */
+#settingsTabCredits::-webkit-scrollbar {
+    width: 8px;
+}
+
+#settingsTabCredits::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#settingsTabCredits::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
 
 .creditItem {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
     opacity: 0;
     transform: translateX(-20px);
     transition: all 0.5s ease;
-    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    padding: 20px;
+    padding: 12px;
+}
+
+.creditItem[data-type="project"] {
+    margin-bottom: 35px; /* 프로젝트 기획과 다음 항목 사이 간격 증가 */
 }
 
 .creditImageContainer {
     flex: 0 0 100px;
-    margin-right: 20px;
+    margin-right: 15px;
 }
 
 .creditImage {
@@ -4442,8 +4463,56 @@ flex-direction: column;
     flex: 1;
 }
 
+.creditTitle {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 4px;
+}
+
 .creditMessage {
-    margin-top: 10px;
-    color: #a5a5a5;
+    margin-top: 5px;
     font-size: 14px;
+}
+
+.button-right-container img,
+#start_button {
+    position: relative;
+    overflow: hidden;
+}
+
+.button-right-container img::before,
+.button-right-container img::after,
+#start_button::before,
+#start_button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.button-right-container img::before,
+#start_button::before {
+    background: rgba(255, 255, 255, 0.1);
+    mix-blend-mode: overlay;
+    z-index: 1;
+}
+
+.button-right-container img::after,
+#start_button::after {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    mix-blend-mode: screen;
+    z-index: 2;
+}
+
+.button-right-container img:hover::before,
+#start_button:hover::before {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.button-right-container img:hover::after,
+#start_button:hover::after {
+    border-color: rgba(255, 255, 255, 0.5);
 }

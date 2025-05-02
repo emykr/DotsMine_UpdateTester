@@ -79,10 +79,11 @@ function setLaunchPercentage(percent) {
     launch_progress.setAttribute('value', percent)
     launch_progress_label.innerHTML = percent + '%'
     
-    // 마스킹 프로그래스바 업데이트
+    // 마스킹 프로그래스바 업데이트 - CSS 그라데이션
     const progressMask = document.getElementById('progress-mask')
     if(progressMask) {
         progressMask.style.width = percent + '%'
+        progressMask.style.transition = 'width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)'
     }
 }
 
@@ -90,18 +91,11 @@ function setDownloadPercentage(percent) {
     // OS 작업표시줄 진행률
     remote.getCurrentWindow().setProgressBar(percent/100)
     
-    // 프로그래스 마스크 업데이트 (필수)
+    // 프로그래스 마스크 업데이트 - CSS 그라데이션
     const progressMask = document.getElementById('progress-mask')
     if(progressMask) {
         progressMask.style.width = percent + '%'
-    }
-    
-    // 로딩 마스크 컨테이너 업데이트
-    const loadingMaskContainer = document.getElementById('loading-mask-container')
-    const frameOverlay = document.getElementById('frame-overlay')
-    if(loadingMaskContainer && frameOverlay) {
-        const maxWidth = frameOverlay.getBoundingClientRect().width
-        loadingMaskContainer.style.width = (percent * maxWidth / 100) + 'px'
+        progressMask.style.transition = 'width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)'
     }
 }
 
