@@ -50,16 +50,6 @@
         "italic": false
     },
     {
-        "title": "디자인",
-        "name": "샤를로트",
-        "image": "assets/images/credit/샤를로트.png",
-        "imageAlign": "right",
-        "imagePosition": "top",
-        "message": "감각적인 디자인으로 즐거움을 선사하겠습니다.",
-        "bold": false,
-        "italic": false
-    },
-    {
         "title": "스토리",
         "name": "야옹메이",
         "image": "assets/images/credit/6s.png",
