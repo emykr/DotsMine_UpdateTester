@@ -36,7 +36,7 @@ body, html, div {
 
 /* Reset p presets. */
 p {
-    -webkit-margin-before: 0em;
+    -webkit-margin-before: -1em;
     -webkit-margin-after: 0em;
 }
 
@@ -4466,7 +4466,7 @@ flex-direction: column;
 .creditTitle {
     font-size: 16px;
     color: white;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .creditMessage {
