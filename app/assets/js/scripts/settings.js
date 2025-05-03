@@ -1636,8 +1636,8 @@ function renderCredits(credits) {
             const messageStyle = []
             if(entry.bold) messageStyle.push('font-weight: bold')
             if(entry.italic) messageStyle.push('font-style: italic')
-            // 메시지의 @n을 \n으로 변환
-            const formattedMessage = entry.message.replace(/@n/g, '\n')
+            // \n을 <br>로 변환
+            const formattedMessage = entry.message.replace(/@n/g, '<br>')
             messageDiv.innerHTML = `<span style="${messageStyle.join(';')}">"${formattedMessage}"</span>`
             contentContainer.appendChild(messageDiv)
         }
