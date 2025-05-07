@@ -517,10 +517,10 @@ function updateUIComponents() {
         
         // 버튼별 클릭 이벤트
         const buttonActions = {
-            button1: () => shell.openExternal('https://discord.gg/V8k7DPCrNf'),
-            button2: () => shell.openExternal('https://x.com/SeaDriver_Games'),
+            button1: () => shell.openExternal('https://discord.gg/wkRhnByN2t'),
+            button2: () => shell.openExternal('https://x.com/SeeGumChi'),
             button3: () => shell.openExternal('https://seadrivergames.com/'),
-            button4: () => shell.openExternal('https://ch.sooplive.co.kr/leemy689'),
+            button4: () => shell.openExternal('https://cafe.naver.com/duckamri'),
             button5: async () => {
                 await prepareSettings()
                 switchView(getCurrentView(), VIEWS.settings, 500, 500, () => {
@@ -533,8 +533,8 @@ function updateUIComponents() {
                 await prepareSettings()
                 switchView(getCurrentView(), VIEWS.settings)
             },
-            button7: () => shell.openExternal('https://discord.com/channels/1352918121736044584/1352918267290845266'),
-            button8: () => shell.openExternal('https://discord.com/channels/1352918121736044584/1352918216917123194')
+            button7: () => shell.openExternal('https://discord.com/channels/1347368865989922867/1368454680518197288'),
+            button8: () => shell.openExternal('https://discord.com/channels/1347368865989922867/1347369451301113957')
         }
 
         // 버튼 이벤트 설정

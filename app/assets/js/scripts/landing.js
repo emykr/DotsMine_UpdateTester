@@ -258,7 +258,8 @@ function toggleGameUI(loading) {
             startButton.disabled = true
         }
 
-        // 15초 후에 자동으로 시작 버튼으로 전환
+        // 기존 15초 후 복귀 코드 백업
+        /*
         setTimeout(() => {
             if(playMaskContainer) {
                 playMaskContainer.style.visibility = 'hidden'
@@ -274,6 +275,7 @@ function toggleGameUI(loading) {
                 startButton.disabled = false
             }
         }, 15000) // 15초
+        */
     } else {
         // 시작 버튼으로 복귀
         if(playMaskContainer) {
@@ -288,6 +290,25 @@ function toggleGameUI(loading) {
         if(startButton) {
             startButton.disabled = false 
         }
+    }
+}
+
+// 로딩바가 100%가 되면 시작버튼 복귀
+const originalSetLaunchPercentage = setLaunchPercentage
+setLaunchPercentage = function(percent) {
+    originalSetLaunchPercentage(percent)
+    if(percent >= 100) {
+        const playButtonContainer = document.getElementById('playButtonContainer')
+        const playMaskContainer = document.getElementById('playMaskContainer')
+        const progressMask = document.getElementById('progress-mask')
+        const startButton = document.getElementById('start_button')
+        if(playMaskContainer) playMaskContainer.style.visibility = 'hidden'
+        if(playButtonContainer) {
+            playButtonContainer.style.visibility = 'visible'
+            playButtonContainer.style.opacity = '1'
+        }
+        if(progressMask) progressMask.style.width = '0%'
+        if(startButton) startButton.disabled = false
     }
 }
 

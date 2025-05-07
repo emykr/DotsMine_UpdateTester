@@ -4,18 +4,18 @@
 title = "DotsMine Studio Launcher"
 
 [ejs.landing]
-mediaGitHubURL = "https://seadrivergames.com/"
-mediaTwitterURL = "https://x.com/SeaDriver_Games"
+mediaGitHubURL = " https://cafe.naver.com/duckamri"
+mediaTwitterURL = "https://x.com/SeeGumChi"
 mediaInstagramURL = "#"
 mediaYouTubeURL = "#"
-mediaDiscordURL = "https://discord.gg/mvXvVgRscT"
+mediaDiscordURL = "https://discord.gg/wkRhnByN2t"
 
 [ejs.settings]
 sourceGithubLink = "#"
 supportLink = "#"
 
 [ejs.welcome]
-welcomeHeader = "SeaDriver Launcher"
-welcomeDescription = "안녕하세요 SeaDriver Games입니다"
-welcomeDescCTA = ""
+welcomeHeader = "DotsMine Launcher"
+welcomeDescription = "안녕하세요. 마인크래프트 서버/컨텐츠 제작 전문 DotsMine Studio입니다."
+welcomeDescCTA = "런처와 관련한 문제가있을경우 관리자에게 문의해주시기 바랍니다"
 
