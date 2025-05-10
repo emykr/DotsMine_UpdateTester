@@ -297,19 +297,6 @@ function toggleGameUI(loading) {
 const originalSetLaunchPercentage = setLaunchPercentage
 setLaunchPercentage = function(percent) {
     originalSetLaunchPercentage(percent)
-    if(percent >= 100) {
-        const playButtonContainer = document.getElementById('playButtonContainer')
-        const playMaskContainer = document.getElementById('playMaskContainer')
-        const progressMask = document.getElementById('progress-mask')
-        const startButton = document.getElementById('start_button')
-        if(playMaskContainer) playMaskContainer.style.visibility = 'hidden'
-        if(playButtonContainer) {
-            playButtonContainer.style.visibility = 'visible'
-            playButtonContainer.style.opacity = '1'
-        }
-        if(progressMask) progressMask.style.width = '0%'
-        if(startButton) startButton.disabled = false
-    }
 }
 
 // 게임 종료/로딩 완료 핸들러
